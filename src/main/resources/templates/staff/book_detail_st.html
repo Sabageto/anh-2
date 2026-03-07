@@ -1,0 +1,755 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="utf-8">
+    <title>Book Library | Staff - Book Detail</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/normalize.css">
+    <link rel="stylesheet" href="../css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/icomoon.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/color.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <style>
+        .form-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        .form-section h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        /* VIEW MODE - Text display */
+        .info-row {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #555;
+            min-width: 180px;
+            padding-right: 15px;
+        }
+
+        .info-value {
+            color: #333;
+            flex: 1;
+            line-height: 1.6;
+        }
+
+        .info-value.empty {
+            color: #999;
+            font-style: italic;
+        }
+
+        .view-mode-text {
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-height: 42px;
+            display: flex;
+            align-items: center;
+        }
+
+        /* EDIT MODE - Disabled inputs */
+        .form-control.field-readonly {
+            background-color: #e9ecef;
+            cursor: not-allowed;
+            border-color: #dee2e6;
+        }
+
+        .form-control.field-editable {
+            background-color: #fff;
+            border: 2px solid #28a745;
+            color: #333;
+        }
+
+        .field-editable:focus {
+            background-color: #f8fff9;
+            border-color: #20c997;
+            box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+        }
+
+        .editable-label {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .mode-badge {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .mode-badge.view {
+            background-color: #e7f3ff;
+            color: #0066cc;
+        }
+
+        .mode-badge.edit {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .alert-info {
+            margin-bottom: 20px;
+        }
+
+        .translator-badge {
+            background-color: #007bff;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-right: 10px;
+            margin-bottom: 8px;
+        }
+
+        .view-image-container {
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: #fff;
+            text-align: center;
+        }
+
+        .view-image-container img {
+            max-width: 100%;
+            max-height: 400px;
+            display: block;
+            margin: 0 auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .button-group.view-mode {
+            justify-content: flex-start;
+        }
+
+        .button-group.edit-mode {
+            justify-content: space-between;
+        }
+    </style>
+</head>
+
+<body>
+<header id="tg-header" class="tg-header tg-haslayout">
+    <div class="tg-topbar">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <div class="tg-userlogin">
+                        <div>
+                            <li style="list-style:none ;" class="menu-item-has-children"
+                                sec:authorize="isAuthenticated()">
+                                <a href=""> <i id="user_icon" class="fa fa-user"></i> Welcome <span
+                                        th:text="${currentStaff.name}"></span></a>
+                                <div class="mega-menu user">
+                                    <ul class="tg-themetabnav " role="tablist">
+                                        <li><a th:href="@{/profile}">Profile<span class="sr-only">(current)</span></a>
+                                        </li>
+                                        <li><a class="tg-userlogout" th:href="@{/logout}">Logout<span class="sr-only">(current)</span></a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tg-middlecontainer" style="padding: 10px;">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <strong class="tg-logo"><a href="index-2.html"><img src="images/logo.png"
+                                                                        alt="company name here"></a></strong>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tg-navigationarea">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <nav id="tg-nav" class="tg-nav">
+                        <div id="tg-navigation" class="collapse navbar-collapse tg-navigation">
+                            <ul>
+                                <li><a th:href="@{/}">Home</a></li>
+                                <li class="tg-active"><a th:href="@{/staff/books}">Books</a></li>
+                                <li><a th:href="@{/staff/orders}">My Orders</a></li>
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="tg-innerbanner tg-haslayout tg-parallax tg-bginnerbanner">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="tg-innerbannercontent">
+                    <h1 style="margin-bottom: 20px;">
+                        <span th:if="${mode == 'view'}">View Book Information</span>
+                        <span th:if="${mode == 'edit'}">Edit Stock Quantity</span>
+                    </h1>
+                    <ol class="tg-breadcrumb">
+                        <li><a th:href="@{/}">Home</a></li>
+                        <li><a th:href="@{/staff/books}">Books</a></li>
+                        <li class="tg-active" th:text="${mode == 'view' ? 'View' : 'Edit Stock'}"></li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- VIEW MODE FORM -->
+<form th:if="${mode == 'view'}" th:object="${book}">
+    <main class="tg-main tg-haslayout">
+        <div class="tg-sectionspace tg-haslayout">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <!-- Success/Error Messages -->
+                        <div th:if="${successMessage}" class="alert alert-success alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <span th:text="${successMessage}"></span>
+                        </div>
+
+                        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <span th:text="${errorMessage}"></span>
+                        </div>
+                    </div>
+
+                    <div class="tg-twocolumns">
+                        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 pull-left">
+                            <div class="tg-content">
+                                <div class="tg-productdetail">
+
+                                    <!-- BASIC INFORMATION -->
+                                    <div class="form-section">
+                                        <h3>Basic Information</h3>
+
+                                        <div class="info-row">
+                                            <div class="info-label">Title:</div>
+                                            <div class="info-value" th:text="${book.title}">Book Title</div>
+                                        </div>
+
+                                        <div class="info-row">
+                                            <div class="info-label">Author:</div>
+                                            <div class="info-value" th:text="${book.author?.name}">Author Name</div>
+                                        </div>
+
+                                        <div class="info-row">
+                                            <div class="info-label">Description:</div>
+                                            <div class="info-value" th:text="${book.description}">Description...</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- PUBLICATION DETAILS -->
+                                    <div class="form-section">
+                                        <h3>Publication Details</h3>
+
+                                        <div class="info-row">
+                                            <div class="info-label">Publication Date:</div>
+                                            <div class="info-value"
+                                                 th:text="${#temporals.format(book.date_publication, 'dd-MM-yyyy')}">
+                                                15-05-2023
+                                            </div>
+                                        </div>
+
+                                        <div class="info-row">
+                                            <div class="info-label">Publisher:</div>
+                                            <div class="info-value"
+                                                 th:classappend="${book.publisher == null ? 'empty' : ''}">
+                                                <span th:if="${book.publisher != null}"
+                                                      th:text="${book.publisher.name}"></span>
+                                                <span th:if="${book.publisher == null}">N/A</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="info-row">
+                                            <div class="info-label">Category:</div>
+                                            <div class="info-value" th:text="${book.category?.name}">Fiction</div>
+                                        </div>
+
+                                        <div class="info-row">
+                                            <div class="info-label">Language:</div>
+                                            <div class="info-value"
+                                                 th:classappend="${book.language == null ? 'empty' : ''}">
+                                                <span th:if="${book.language != null}"
+                                                      th:text="${book.language.name}"></span>
+                                                <span th:if="${book.language == null}">N/A</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="info-row">
+                                            <div class="info-label">Translators:</div>
+                                            <div class="info-value">
+                                                <div th:if="${book.bookTranslatorList != null && book.bookTranslatorList.size() > 0}">
+                                                    <span th:each="bt: ${book.bookTranslatorList}">
+                                                        <span class="translator-badge">
+                                                            <i class="fa fa-user-circle"></i>
+                                                            <span th:text="${bt.translator.name}"></span>
+                                                        </span>
+                                                    </span>
+                                                </div>
+                                                <span th:if="${book.bookTranslatorList == null || book.bookTranslatorList.size() == 0}"
+                                                      class="empty">
+                                                    No translators assigned
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- SERIES INFORMATION -->
+                                    <div class="form-section">
+                                        <h3>Series Information</h3>
+
+                                        <div class="info-row">
+                                            <div class="info-label">Series:</div>
+                                            <div class="info-value"
+                                                 th:classappend="${book.series == null ? 'empty' : ''}">
+                                                <span th:if="${book.series != null}"
+                                                      th:text="${book.series.name}"></span>
+                                                <span th:if="${book.series == null}">N/A</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="info-row">
+                                            <div class="info-label">Volume Number:</div>
+                                            <div class="info-value"
+                                                 th:classappend="${book.volumeNumber == null ? 'empty' : ''}">
+                                                <span th:if="${book.volumeNumber != null}"
+                                                      th:text="${book.volumeNumber}"></span>
+                                                <span th:if="${book.volumeNumber == null}">N/A</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- PHYSICAL DETAILS -->
+                                    <div class="form-section">
+                                        <h3>Physical Details</h3>
+
+                                        <div class="info-row">
+                                            <div class="info-label">Number of Pages:</div>
+                                            <div class="info-value" th:text="${book.number_page}">350</div>
+                                        </div>
+
+                                        <div class="info-row">
+                                            <div class="info-label">Size:</div>
+                                            <div class="info-value"
+                                                 th:classappend="${book.size == null ? 'empty' : ''}">
+                                                <span th:if="${book.size != null}" th:text="${book.size}"></span>
+                                                <span th:if="${book.size == null}">N/A</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- PRICING & INVENTORY -->
+                                    <div class="form-section">
+                                        <h3>Pricing & Inventory</h3>
+
+                                        <div class="info-row">
+                                            <div class="info-label">Price:</div>
+                                            <div class="info-value"
+                                                 th:text="${#numbers.formatInteger(book.price, 1, 'COMMA') + ' VND'}">
+                                                150,000 VND
+                                            </div>
+                                        </div>
+
+                                        <div class="info-row">
+                                            <div class="info-label">Stock Quantity:</div>
+                                            <div class="info-value" th:text="${book.number_in_stock + ' copies'}">
+                                                50 copies
+                                            </div>
+                                        </div>
+
+                                        <div class="info-row">
+                                            <div class="info-label">Number Sold:</div>
+                                            <div class="info-value" th:text="${book.number_sold + ' copies'}">
+                                                120 copies
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- TIMESTAMP INFORMATION -->
+                                    <div class="form-section">
+                                        <h3>System Information</h3>
+
+                                        <div class="info-row">
+                                            <div class="info-label">Created At:</div>
+                                            <div class="info-value"
+                                                 th:text="${#dates.format(book.created_at, 'dd-MM-yyyy')}">
+                                                2023-01-15
+                                            </div>
+                                        </div>
+
+                                        <div class="info-row" th:if="${book.updated_at != null}">
+                                            <div class="info-label">Last Updated:</div>
+                                            <div class="info-value"
+                                                 th:text="${#dates.format(book.updated_at, 'dd-MM-yyyy')}">
+                                                2023-06-20
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- IMAGE SECTION -->
+                        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 pull-right">
+                            <aside class="tg-sidebar">
+                                <div class="view-image-container">
+                                    <h4 style="margin-top: 0; color: #555;">Book Cover</h4>
+                                    <img th:src="${book.id != null ? '/bookImage?id=' + book.id : ''}"
+                                         alt="Book Cover"
+                                         style="max-width: 100%; max-height: 400px;">
+                                </div>
+                            </aside>
+                        </div>
+                    </div>
+
+                    <br>
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <div class="button-group view-mode">
+                            <a th:href="@{/staff/books}" class="btn btn-default">
+                                <i class="fa fa-arrow-left"></i> Back
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</form>
+
+<!-- EDIT STOCK MODE FORM -->
+<form th:if="${mode == 'edit'}" th:object="${book}" method="post" th:action="@{/staff/save}">
+    <main id="tg-main" class="tg-main tg-haslayout">
+        <div class="tg-sectionspace tg-haslayout">
+            <div class="container">
+                <div class="row">
+                    <input type="hidden" th:field="*{id}"/>
+
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <!-- Info Message -->
+                        <div class="alert alert-info" role="alert">
+                            <i class="fa fa-info-circle"></i> <strong>Reminder:</strong> You can only update the
+                            <strong style="color: #0066cc;">Stock Quantity</strong> field. All other information is
+                            read-only.
+                        </div>
+
+                        <!-- Success/Error Messages -->
+                        <div th:if="${successMessage}" class="alert alert-success alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <span th:text="${successMessage}"></span>
+                        </div>
+
+                        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <span th:text="${errorMessage}"></span>
+                        </div>
+                    </div>
+
+                    <div id="tg-twocolumns" class="tg-twocolumns">
+                        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 pull-left">
+                            <div id="tg-content" class="tg-content">
+                                <div class="tg-productdetail">
+
+                                    <!-- BASIC INFORMATION (READ-ONLY) -->
+                                    <div class="form-section">
+                                        <h3>Basic Information (Read-Only)</h3>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                                <div class="form-group">
+                                                    <label>Title</label>
+                                                    <input th:field="*{title}" type="text"
+                                                           class="form-control field-readonly"
+                                                           readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                                <div class="form-group">
+                                                    <label>Author</label>
+                                                    <input type="text"
+                                                           th:value="${book.author?.name}"
+                                                           class="form-control field-readonly"
+                                                           readonly>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- DESCRIPTION (READ-ONLY) -->
+                                    <div class="form-section">
+                                        <h3>Description (Read-Only)</h3>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                                <div class="form-group">
+                                                    <label>Description</label>
+                                                    <textarea th:field="*{description}"
+                                                              class="form-control field-readonly"
+                                                              readonly
+                                                              rows="4"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- PUBLICATION DETAILS (READ-ONLY) -->
+                                    <div class="form-section">
+                                        <h3>Publication Details (Read-Only)</h3>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                                <div class="form-group">
+                                                    <label>Publication Date</label>
+                                                    <input type="date"
+                                                           th:field="*{date_publication}"
+                                                           class="form-control field-readonly"
+                                                           readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                                <div class="form-group">
+                                                    <label>Publisher</label>
+                                                    <input type="text"
+                                                           th:value="${book.publisher?.name}"
+                                                           class="form-control field-readonly"
+                                                           readonly>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                                <div class="form-group">
+                                                    <label>Category</label>
+                                                    <input type="text"
+                                                           th:value="${book.category?.name}"
+                                                           class="form-control field-readonly"
+                                                           readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                                <div class="form-group">
+                                                    <label>Language</label>
+                                                    <input type="text"
+                                                           th:value="${book.language?.name}"
+                                                           class="form-control field-readonly"
+                                                           readonly>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- SERIES INFORMATION (READ-ONLY) -->
+                                    <div class="form-section">
+                                        <h3>Series Information (Read-Only)</h3>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                                <div class="form-group">
+                                                    <label>Series</label>
+                                                    <input type="text"
+                                                           th:value="${book.series?.name}"
+                                                           class="form-control field-readonly"
+                                                           readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                                <div class="form-group">
+                                                    <label>Volume Number</label>
+                                                    <input type="number"
+                                                           th:value="${book.volumeNumber}"
+                                                           class="form-control field-readonly"
+                                                           readonly>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- PHYSICAL DETAILS (READ-ONLY) -->
+                                    <div class="form-section">
+                                        <h3>Physical Details (Read-Only)</h3>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                                <div class="form-group">
+                                                    <label>Number of Pages</label>
+                                                    <input type="number"
+                                                           th:value="${book.number_page}"
+                                                           class="form-control field-readonly"
+                                                           readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                                <div class="form-group">
+                                                    <label>Size</label>
+                                                    <input type="text"
+                                                           th:value="${book.size}"
+                                                           class="form-control field-readonly"
+                                                           readonly>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- PRICING & INVENTORY (STOCK EDITABLE) -->
+                                    <div class="form-section">
+                                        <h3>Pricing & Inventory</h3>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                                <div class="form-group">
+                                                    <label>Price (Read-Only)</label>
+                                                    <input type="number"
+                                                           th:field="*{price}"
+                                                           class="form-control field-readonly"
+                                                           readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                                <div class="form-group">
+                                                    <label class="editable-label">
+                                                        <i class="fa fa-edit"></i> <span style="color: red;">*</span>
+                                                        Stock Quantity
+                                                    </label>
+                                                    <input type="number"
+                                                           name="stock"
+                                                           th:value="${book.number_in_stock}"
+                                                           min="0"
+                                                           class="form-control field-editable"
+                                                           required
+                                                           placeholder="Enter new stock quantity">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                                <div class="form-group">
+                                                    <label>Number Sold (Read-Only)</label>
+                                                    <input type="number"
+                                                           th:value="${book.number_sold}"
+                                                           class="form-control field-readonly"
+                                                           readonly>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- IMAGE SECTION -->
+                        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 pull-right">
+                            <aside id="tg-sidebar" class="tg-sidebar">
+                                <div class="view-image-container">
+                                    <h4 style="margin-top: 0; color: #555;">Book Cover</h4>
+                                    <img th:src="${book.id != null ? '/bookImage?id=' + book.id : ''}"
+                                         alt="Book Cover"
+                                         style="max-width: 100%; max-height: 400px;">
+                                </div>
+                            </aside>
+                        </div>
+                    </div>
+
+                    <br>
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <div class="button-group edit-mode">
+                            <button type="button" class="btn btn-primary"
+                                    data-toggle="modal" data-target="#confirmSaveModal">
+                                <i class="fa fa-save"></i> Save
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Confirm Save Modal -->
+    <div class="modal fade" id="confirmSaveModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" style="text-transform: none;">
+                        <i class="fa fa-question-circle"></i> Confirm Stock Update
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to update the stock quantity for <strong th:text="${book.title}"></strong>?
+                    </p>
+                    <p style="color: #666; font-size: 13px;">This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        <i class="fa fa-times"></i> Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa fa-check"></i> Confirm Update
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<footer id="tg-footer" class="tg-footer tg-haslayout">
+    <div class="tg-footerbar">
+        <a id="tg-btnbacktotop" class="tg-btnbacktotop" href="javascript:void(0);"><i
+                class="icon-chevron-up"></i></a>
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <span class="tg-copyright">2023 All Rights Reserved By &copy; Book Library</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="../js/vendor/jquery-library.js"></script>
+<script src="../js/vendor/bootstrap.min.js"></script>
+<script src="../js/main.js"></script>
+</body>
+
+</html>

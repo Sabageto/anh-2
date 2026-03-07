@@ -1,0 +1,217 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Book Library | Series - Staff</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/normalize.css">
+    <link rel="stylesheet" href="../css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/icomoon.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/color.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <script src="../js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
+    <style>
+        .status-badge { display: inline-block; padding: 4px 8px; border-radius: 3px; font-size: 12px; font-weight: bold; }
+        .status-ongoing    { background-color: #5bc0de; color: white; }
+        .status-completed  { background-color: #5cb85c; color: white; }
+        .status-discontinued { background-color: #d9534f; color: white; }
+    </style>
+</head>
+<body>
+<header id="tg-header" class="tg-header tg-haslayout">
+    <div class="tg-topbar">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="tg-userlogin">
+                        <div>
+                            <li style="list-style:none;" class="menu-item-has-children"
+                                sec:authorize="isAuthenticated()">
+                                <a href=""><i class="fa fa-user"></i> Welcome
+                                    <span th:text="${currentStaff != null ? currentStaff.name : ''}"></span>
+                                </a>
+                                <div class="mega-menu user">
+                                    <ul class="tg-themetabnav" role="tablist">
+                                        <li><a th:href="@{/profile}">Profile</a></li>
+                                        <li><a class="tg-userlogout" th:href="@{/logout}">Logout</a></li>
+                                    </ul>
+                                </div>
+                            </li>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tg-middlecontainer" style="padding: 10px;">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <strong class="tg-logo"><a th:href="@{/}"><img src="../images/logo.png"
+                                                                   alt="Book Library"></a></strong>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tg-navigationarea">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <nav id="tg-nav" class="tg-nav">
+                        <div class="navbar-header">
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                                    data-target="#tg-navigation">
+                                <span class="icon-bar"></span><span class="icon-bar"></span><span
+                                    class="icon-bar"></span>
+                            </button>
+                        </div>
+                        <div id="tg-navigation" class="collapse navbar-collapse tg-navigation">
+                            <ul>
+                                <li><a th:href="@{/}">Home</a></li>
+                                <li><a th:href="@{/staff/books}">Books</a></li>
+                                <li><a th:href="@{/staff/orders}">Orders</a></li>
+                                <li><a th:href="@{/staff/categories}">Categories</a></li>
+                                <li><a th:href="@{/staff/authors}">Authors</a></li>
+                                <li><a th:href="@{/staff/promotions}">Promotions</a></li>
+                                <li class="menu-item-has-children">
+                                    <a href="javascript:void(0);"><i class="fa fa-bars"></i></a>
+                                    <div class="mega-menu"
+                                         style="position:absolute; min-width:220px; padding:0.5rem 0;">
+                                        <ul class="list-unstyled mb-0">
+                                            <li><a th:href="@{/staff/series}" class="dropdown-item"><i
+                                                    class="fa fa-book"></i> Series</a></li>
+                                            <li><a th:href="@{/staff/languages}" class="dropdown-item"><i
+                                                    class="fa fa-flag"></i> Language</a></li>
+                                            <li><a th:href="@{/staff/publishers}" class="dropdown-item"><i
+                                                    class="fa fa-briefcase"></i> Publisher</a></li>
+                                            <li><a th:href="@{/staff/translators}" class="dropdown-item"><i
+                                                    class="fa fa-users"></i> Translator</a></li>
+                                        </ul>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="tg-innerbanner tg-haslayout tg-parallax tg-bginnerbanner" data-z-index="-100"
+     data-appear-top-offset="600" data-parallax="scroll" data-image-src="../images/parallax/bgparallax-07.jpg">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="tg-innerbannercontent">
+                    <h1 style="margin-bottom:20px;">Series</h1>
+                    <ol class="tg-breadcrumb">
+                        <li><a th:href="@{/}">Home</a></li>
+                        <li class="tg-active">Series</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<main id="tg-main" class="tg-main tg-haslayout">
+    <div class="tg-sectionspace tg-haslayout" style="padding-top:50px;">
+        <div class="container">
+
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible" role="alert"
+                 style="margin-bottom:20px;">
+                <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+                <strong>Error!</strong> <span th:text="${errorMessage}"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Name</th>
+                                <th>Total Volumes</th>
+                                <th>Status</th>
+                                <th>Book Count</th>
+                                <th>Created at</th>
+                                <th>Updated at</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="series, iterStat : ${seriesList}">
+                                <td th:text="${(page - 1) * 10 + iterStat.count}"></td>
+                                <td th:text="${series.name}"></td>
+                                <td th:text="${series.totalVolumes != null ? series.totalVolumes : '-'}"></td>
+                                <td>
+                                    <span th:if="${series.status == 'ONGOING'}" class="status-badge status-ongoing">ONGOING</span>
+                                    <span th:if="${series.status == 'COMPLETED'}" class="status-badge status-completed">COMPLETED</span>
+                                    <span th:if="${series.status == 'DISCONTINUED'}"
+                                          class="status-badge status-discontinued">DISCONTINUED</span>
+                                </td>
+                                <td th:text="${bookCountMap[series.id]}"></td>
+                                <td th:text="${series.created_at}"></td>
+                                <td th:text="${series.updated_at}"></td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(seriesList)}">
+                                <td colspan="7" style="text-align:center; padding:30px; color:#999;">
+                                    <i class="fa fa-inbox" style="font-size:36px;"></i>
+                                    <p style="margin-top:10px;">No series found.</p>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <nav aria-label="Page navigation" style="text-align:center;">
+                <ul class="pagination">
+                    <li th:classappend="${page == 1} ? 'disabled'">
+                        <a th:if="${page > 1}" th:href="@{/staff/series(page=${page - 1})}">&laquo;</a>
+                        <span th:if="${page == 1}">&laquo;</span>
+                    </li>
+                    <li th:each="i : ${#numbers.sequence(1, totalPage)}" th:classappend="${i == page} ? 'active'">
+                        <a th:href="@{/staff/series(page=${i})}" th:text="${i}"></a>
+                    </li>
+                    <li th:classappend="${page == totalPage} ? 'disabled'">
+                        <a th:if="${page < totalPage}" th:href="@{/staff/series(page=${page + 1})}">&raquo;</a>
+                        <span th:if="${page == totalPage}">&raquo;</span>
+                    </li>
+                </ul>
+            </nav>
+
+        </div>
+    </div>
+</main>
+
+<footer id="tg-footer" class="tg-footer tg-haslayout">
+    <div class="tg-footerbar">
+        <a id="tg-btnbacktotop" class="tg-btnbacktotop" href="javascript:void(0);"><i class="icon-chevron-up"></i></a>
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <span class="tg-copyright">2023 All Rights Reserved By &copy; Book Library</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<script src="../js/vendor/jquery-library.js"></script>
+<script src="../js/vendor/bootstrap.min.js"></script>
+<script src="../js/owl.carousel.min.js"></script>
+<script src="../js/jquery.vide.min.js"></script>
+<script src="../js/countdown.js"></script>
+<script src="../js/jquery-ui.js"></script>
+<script src="../js/parallax.js"></script>
+<script src="../js/countTo.js"></script>
+<script src="../js/appear.js"></script>
+<script src="../js/gmap3.js"></script>
+<script src="../js/main.js"></script>
+</body>
+</html>

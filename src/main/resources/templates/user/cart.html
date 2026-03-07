@@ -1,0 +1,945 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Book Library | Cart - user</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/normalize.css">
+    <link rel="stylesheet" href="../css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/icomoon.css">
+    <link rel="stylesheet" href="../css/jquery-ui.css">
+    <link rel="stylesheet" href="../css/owl.carousel.css">
+    <link rel="stylesheet" href="../css/transitions.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/color.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <script src="../js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
+    <style>
+        /* Series Bundle Styling */
+        .series-bundle-group {
+            background-color: #f0f9ff;
+            border: 2px solid #5cb85c;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .series-bundle-header {
+            background: linear-gradient(135deg, #5cb85c 0%, #4cae4c 100%);
+            color: white;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .series-badge {
+            background-color: #fff;
+            color: #5cb85c;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .series-discount-badge {
+            background-color: #ffc107;
+            color: #000;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .series-book-row {
+            background-color: white;
+            border-left: 4px solid #5cb85c;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+
+        .series-book-row td {
+            border-top: none !important;
+        }
+
+        .regular-book-row {
+            background-color: white;
+        }
+
+        .series-total-row {
+            background-color: #e8f5e9;
+            font-weight: bold;
+            border-top: 2px solid #5cb85c;
+        }
+
+        .volume-badge {
+            background-color: #2196F3;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+<header id="tg-header" class="tg-header tg-haslayout">
+    <div class="tg-topbar">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <div class="tg-userlogin">
+                        <div>
+                            <li style="list-style:none ;" class="menu-item-has-children"
+                                sec:authorize = "isAuthenticated()">
+                                <a href=""> <i id="user_icon" class="fa fa-user"></i> Welcome <span class="sr-only"></span></a>
+                                <div class="mega-menu user">
+                                    <ul class="tg-themetabnav " role="tablist">
+                                        <li><a th:href="@{/profile}">Profile<span class="sr-only">(current)</span></a></li>
+                                        <li><a th:href="@{/orders}" sec:authorize = "hasRole('USER')">Orders<span class="sr-only">(current)</span></a></li>
+                                        <li><a class="tg-userlogout" th:href="@{/logout}">Logout<span class="sr-only">(current)</span></a></li>
+                                    </ul>
+                                </div>
+                            </li>
+                            <br>
+                            <a class="nav-link text" th:href="@{/signup}"
+                               style="margin-right: 30px" sec:authorize = "!isAuthenticated()">
+                                Sign up<span class="sr-only">(current)</span></a>
+                            <a class="nav-link text" th:href="@{/login}"
+                               sec:authorize = "!isAuthenticated()">
+                                Login<span class="sr-only">(current)</span></a>
+                        </div>
+                    </div>
+                    <div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tg-middlecontainer" style="padding: 10px;">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <strong class="tg-logo"><a href="index-2.html"><img src="images/logo.png" alt="company name here"></a></strong>
+                    <div class="tg-wishlistandcart">
+                        <div sec:authorize = "hasRole('USER')" class="dropdown tg-themedropdown tg-minicartdropdown">
+                            <a  id="tg-minicart" class="tg-btnthemedropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="tg-themebadge" th:text="${cartItems != null ? cartItems.size() : 0}">0</span>
+                                <a th:href="@{/view-cart}"><i class="icon-cart"></i>
+                                    <span style="margin-left: 10px;">Cart</span></a>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tg-navigationarea">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <nav id="tg-nav" class="tg-nav">
+                        <div class="navbar-header">
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#tg-navigation" aria-expanded="false">
+                                <span class="sr-only">Toggle navigation</span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                        </div>
+                        <div id="tg-navigation" class="collapse navbar-collapse tg-navigation">
+                            <ul>
+                                <li><a th:href="@{/}">Home</a></li>
+                                <li><a th:href="@{/products}" sec:authorize = "!hasRole('ADMIN')">Books</a></li>
+                                <li><a th:href="@{/manage-product}" sec:authorize = "hasRole('ADMIN')">Books</a></li>
+                                <li><a th:href="@{/manage-category}" sec:authorize = "hasRole('ADMIN')">Categories</a></li>
+                                <li><a th:href="@{/manage-author}" sec:authorize = "hasRole('ADMIN')">Authors</a></li>
+                                <li><a th:href="@{/manage-user}" sec:authorize="hasRole('ADMIN')">Users</a></li>
+                                <li><a th:href="@{/manage-order}" sec:authorize = "hasRole('ADMIN')">Orders</a></li>
+                                <li><a th:href="@{/manage-promotion}" sec:authorize="hasRole('ADMIN')">Promotions</a></li>
+                                <li><a th:href="@{/statistic}" sec:authorize="hasRole('ADMIN')">Statistics</a></li>
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="tg-innerbanner tg-haslayout tg-parallax tg-bginnerbanner" data-z-index="-100" data-appear-top-offset="600" data-parallax="scroll" data-image-src="../images/parallax/bgparallax-07.jpg">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="tg-innerbannercontent">
+                    <h1 style="margin-bottom: 20px;">Cart</h1>
+                    <ol class="tg-breadcrumb">
+                        <li><a th:href="@{/}">Home</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<main id="tg-main" class="tg-main tg-haslayout">
+    <div style="display: none;">
+        <span id="flashSuccess" th:if="${success}" th:text="${success}"></span>
+        <span id="flashError" th:if="${error}" th:text="${error}"></span>
+    </div>
+    <div class="tg-sectionspace tg-haslayout">
+        <div class="container">
+            <div class="row">
+                <div id="tg-twocolumns" class="tg-twocolumns">
+                    <div>
+                        <div>
+                            <th:block th:if="${cartItems != null && !cartItems.isEmpty()}">
+
+                                <!-- ========== SERIES BUNDLE NOTIFICATION ========== -->
+                                <div th:if="${detectedSeriesMap != null && !detectedSeriesMap.isEmpty()}"
+                                     style="margin-bottom: 20px;">
+                                    <div th:each="entry : ${detectedSeriesMap}" class="alert alert-success"
+                                         style="border-left: 5px solid #5cb85c; background-color: #dff0d8;">
+                                        <i class="fa fa-check-circle" style="font-size: 20px; margin-right: 10px;"></i>
+                                        <strong>Complete Series Detected!</strong><br>
+                                        <span th:text="|You have all volumes of &quot;${entry.value.name}&quot; in your cart|"></span>
+                                        <span class="series-discount-badge" style="margin-left: 10px;">
+                                            <i class="fa fa-tag"></i> 5% Bundle Discount Will Apply at Checkout
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <form method="post" th:action="@{/purchase}" id="cartForm">
+                                    <table class="styled-table">
+                                        <thead>
+                                        <tr>
+                                            <th>
+                                                <input type="checkbox" id="selectAll" onclick="toggleSelectAll()">
+                                            </th>
+                                            <th>No.</th>
+                                            <th>Book Title</th>
+                                            <th>Image</th>
+                                            <th>Unit Price</th>
+                                            <th>Quantity</th>
+                                            <th>Subtotal</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+
+                                        <!-- ========== SERIES BUNDLES ========== -->
+                                        <th:block th:if="${seriesBundlesInCart != null && !seriesBundlesInCart.isEmpty()}">
+                                            <th:block th:each="seriesEntry : ${seriesBundlesInCart}">
+                                                <!-- Series Header Row -->
+                                                <tr>
+                                                    <td colspan="8" style="padding: 0; border: none;">
+                                                        <div class="series-bundle-header">
+                                                        <div>
+                                                            <i class="fa fa-book"></i>
+                                                            <strong style="font-size: 16px; margin-left: 8px;"
+                                                                    th:text="${seriesEntry.value.name}"></strong>
+                                                            <span class="series-badge" style="margin-left: 10px;">
+                                                                 Complete Series
+                                                                     </span>
+                                                            <!-- Show number of sets -->
+                                                            <span th:if="${seriesSetsMap != null && seriesSetsMap.get(seriesEntry.key) != null}"
+                                                                  class="series-badge" style="margin-left: 10px; background-color: #2196F3;">
+                                                                 <span th:text="${seriesSetsMap.get(seriesEntry.key)}"></span> Sets
+                                                            </span>
+                                                        </div>
+                                                        <div class="series-discount-badge">
+                                                            <i class="fa fa-tag"></i>
+                                                            <span th:if="${seriesSetsMap != null && seriesSetsMap.get(seriesEntry.key) != null && seriesSetsMap.get(seriesEntry.key) >= 2}">
+                                                                    10% OFF
+                                                                </span>
+                                                            <span th:if="${seriesSetsMap != null && seriesSetsMap.get(seriesEntry.key) != null && seriesSetsMap.get(seriesEntry.key) == 1}">
+                                                                        5% OFF
+                                                                    </span>
+                                                        </div>
+                                                    </div>
+                                                    </td>
+                                                </tr>
+
+                                                <!-- Series Books -->
+                                                <th:block th:each="detail, iterStat : ${cartItems}">
+                                                    <tr th:if="${detail.book.series != null && detail.book.series.id == seriesEntry.key}"
+                                                        class="series-book-row">
+                                                        <input type="hidden" th:id="${'numberInStock'+iterStat.index}"
+                                                               th:value="${detail.book.number_in_stock}">
+                                                        <input type="hidden" th:id="${'unitPrice'+iterStat.index}"
+                                                               th:value="${detail.book.price}">
+                                                        <td>
+                                                            <input type="checkbox"
+                                                                   class="item-checkbox series-checkbox"
+                                                                   name="selectedItems"
+                                                                   th:value="${detail.book.id}"
+                                                                   th:attr="data-series-id=${seriesEntry.key}"
+                                                                   checked
+                                                                   onclick="updateTotal(); checkSeriesSelection();">
+                                                        </td>
+                                                        <td th:text="${iterStat.index + 1}"></td>
+                                                        <td>
+                                                            <span th:text="${detail.book.title}"></span>
+                                                            <span th:if="${detail.book.volumeNumber != null}"
+                                                                  class="volume-badge">
+                                                                Vol. <span th:text="${detail.book.volumeNumber}"></span>
+                                                            </span>
+                                                        </td>
+                                                        <td><img th:src="@{|/bookImage?id=${detail.book.id}|}"
+                                                                 alt="image description" style="height: 100px;"></td>
+                                                        <td th:text="${#numbers.formatDecimal(detail.book.price, 1, 'COMMA', 1, 'POINT') + ' VND'}"
+                                                            style="font-size: 15px"></td>
+                                                        <td>
+                                                            <div class="quantity-controls">
+                                                                <button type="button" class="btn btn-sm btn-outline-secondary"
+                                                                        th:onclick="'decreaseQuantity(' + ${iterStat.index} + ')'">-</button>
+                                                                <input type="number"
+                                                                       th:name="${'quantity'+iterStat.index}"
+                                                                       min="1"
+                                                                       th:value="${detail.quantity}"
+                                                                       style="width: 80px; margin: 8px 5px; text-align: center;"
+                                                                       th:id="${'quantity'+iterStat.index}"
+                                                                       th:onchange="'updateQuantity(' + ${iterStat.index} + ', ' + ${detail.book.id} + ')'">
+                                                                <button type="button" class="btn btn-sm btn-outline-secondary"
+                                                                        th:onclick="'increaseQuantity(' + ${iterStat.index} + ')'">+</button>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <span th:id="${'subtotal'+iterStat.index}"
+                                                                  class="item-subtotal"
+                                                                  th:attr="data-price=${detail.book.price},data-quantity=${detail.quantity}"
+                                                                  style="font-size: 15px; font-weight: bold; color: #5cb85c;"
+                                                                  th:text="${#numbers.formatDecimal(detail.book.price * detail.quantity, 1, 'COMMA', 1, 'POINT') + ' VND'}">
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <button type="button"
+                                                                    class="btn btn-danger"
+                                                                    style="width: 80px;"
+                                                                    th:onclick="'removeBookFromCart(' + ${detail.book.id} + ')'">
+                                                                Remove
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                </th:block>
+
+                                                <!-- Series Subtotal Row -->
+                                                <tr class="series-total-row" th:id="${'seriesTotal_' + seriesEntry.key}">
+                                                    <td colspan="6" style="text-align: right; padding: 15px;">
+                                                        <strong style="font-size: 15px;">
+                                                            <i class="fa fa-book"></i> Series Subtotal:
+                                                        </strong>
+                                                    </td>
+                                                    <td colspan="2" style="padding: 15px;">
+                                                        <div style="font-size: 16px;">
+                                                            <div style="color: #999; text-decoration: line-through; font-size: 13px;">
+                                                                Original: <span class="series-original" th:attr="data-series-id=${seriesEntry.key}">0</span> VND
+                                                            </div>
+                                                            <div style="color: #5cb85c; font-weight: bold; font-size: 18px;">
+                                                                With 5% discount: <span class="series-discounted" th:attr="data-series-id=${seriesEntry.key}">0</span> VND
+                                                            </div>
+                                                            <div style="color: #d9534f; font-size: 13px; font-weight: 600;">
+                                                                You save: <span class="series-savings" th:attr="data-series-id=${seriesEntry.key}">0</span> VND
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </th:block>
+                                        </th:block>
+
+                                        <!-- ========== REGULAR BOOKS (Not part of any complete series) ========== -->
+                                        <th:block th:each="detail, iterStat: ${cartItems}">
+                                            <tr th:if="${detail.book.series == null || !seriesBundlesInCart.containsKey(detail.book.series.id)}"
+                                                class="regular-book-row active-row">
+                                                <input type="hidden" th:id="${'numberInStock'+iterStat.index}"
+                                                       th:value="${detail.book.number_in_stock}">
+                                                <input type="hidden" th:id="${'unitPrice'+iterStat.index}"
+                                                       th:value="${detail.book.price}">
+                                                <td>
+                                                    <input type="checkbox"
+                                                           class="item-checkbox"
+                                                           name="selectedItems"
+                                                           th:value="${detail.book.id}"
+                                                           onclick="updateTotal()">
+                                                </td>
+                                                <td th:text="${iterStat.index + 1}"></td>
+                                                <td th:text="${detail.book.title}"></td>
+                                                <td><img th:src="@{|/bookImage?id=${detail.book.id}|}"
+                                                         alt="image description" style="height: 100px;"></td>
+                                                <td th:text="${#numbers.formatInteger(detail.book.price, 1, 'COMMA') + ' VND'}"
+                                                    style="font-size: 15px"></td>
+                                                <td>
+                                                    <div class="quantity-controls">
+                                                        <button type="button" class="btn btn-sm btn-outline-secondary"
+                                                                th:onclick="'decreaseQuantity(' + ${iterStat.index} + ')'">-</button>
+                                                        <input type="number"
+                                                               th:name="${'quantity'+iterStat.index}"
+                                                               min="1"
+                                                               th:value="${detail.quantity}"
+                                                               style="width: 70px; margin: 8px 5px; text-align: center;"
+                                                               th:id="${'quantity'+iterStat.index}"
+                                                               th:onchange="'updateQuantity(' + ${iterStat.index} + ', ' + ${detail.book.id} + ')'">
+                                                        <button type="button" class="btn btn-sm btn-outline-secondary"
+                                                                th:onclick="'increaseQuantity(' + ${iterStat.index} + ')'">+</button>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span th:id="${'subtotal'+iterStat.index}"
+                                                          class="item-subtotal"
+                                                          th:attr="data-price=${detail.book.price},data-quantity=${detail.quantity}"
+                                                          style="font-size: 15px; font-weight: bold; color: #d9534f;"
+                                                          th:text="${#numbers.formatInteger(detail.book.price * detail.quantity, 1, 'COMMA') + ' VND'}">
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <button type="button"
+                                                            class="btn btn-danger"
+                                                            style="width: 80px;"
+                                                            th:onclick="'removeBookFromCart(' + ${detail.book.id} + ')'">
+                                                        Remove
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </th:block>
+
+                                        <tr>
+                                            <td colspan="8">
+                                                <div style="text-align: right; margin: 15px 10px;">
+                                                    <strong style="font-size: 18px; color: #333;">
+                                                        Total Cart:
+                                                        <span id="totalCart" style="color: #d9534f; font-size: 20px;">0 VND</span>
+                                                    </strong>
+                                                    <div id="seriesSavingsTotal" style="display: none; color: #5cb85c; font-size: 14px; margin-top: 5px;">
+                                                        <i class="fa fa-tag"></i> Series Bundle Savings: <span id="totalSeriesSavings">0</span> VND
+                                                    </div>
+                                                </div>
+                                                <button class="btn btn-primary" style="background: green; width: 200px; margin-bottom: 5px; margin-top: 5px;"
+                                                        type="submit" onclick="return validateSelection()"> <i class="bi bi-cart-fill"></i>
+                                                    Place Order
+                                                </button>
+                                                <button type="button"
+                                                        class="btn btn-warning"
+                                                        style="width: 200px; margin-bottom: 5px; margin-top: 5px;"
+                                                        onclick="confirmClearCart()">
+                                                    <i class="fa fa-trash"></i> Clear All
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </form>
+                            </th:block>
+
+                            <th:block th:if="${cartItems == null || cartItems.isEmpty()}">
+                                <h5 style="color: red; margin-top: 5px;">Your cart is empty</h5>
+                            </th:block>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</div>
+<footer id="tg-footer" class="tg-footer tg-haslayout">
+    <div class="tg-footerarea">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="tg-clientservices">
+                        <li class="tg-devlivery">
+                            <span class="tg-clientserviceicon"><i class="icon-rocket"></i></span>
+                            <div class="tg-titlesubtitle">
+                                <h3>Delivery </h3>
+                                <p>Fast nationwide delivery</p>
+                            </div>
+                        </li>
+                        <li class="tg-discount">
+                            <span class="tg-clientserviceicon"><i class="icon-tag"></i></span>
+                            <div class="tg-titlesubtitle">
+                                <h3>Price</h3>
+                                <p>Attractive and reasonable</p>
+                            </div>
+                        </li>
+                        <li class="tg-quality">
+                            <span class="tg-clientserviceicon"><i class="icon-leaf"></i></span>
+                            <div class="tg-titlesubtitle">
+                                <h3>Quality</h3>
+                                <p>Top quality</p>
+                            </div>
+                        </li>
+                        <li class="tg-support">
+                            <span class="tg-clientserviceicon"><i class="icon-heart"></i></span>
+                            <div class="tg-titlesubtitle">
+                                <h3>Support 24/7</h3>
+                                <p>Serving all time</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="tg-threecolumns">
+                    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                        <div class="tg-footercol">
+                            <strong class="tg-logo"><a href="javascript:void(0);"><img src="../images/flogo.png" alt="image description"></a></strong>
+                            <ul class="tg-contactinfo">
+                                <li>
+                                    <i class="icon-apartment"></i>
+                                    <address>Ha Dong, Hanoi, Vietnam</address>
+                                </li>
+                                <li>
+                                    <i class="icon-phone-handset"></i>
+                                    <span>
+														<em>0812 567 889</em>
+														<em>+84 1245 6767</em>
+													</span>
+                                </li>
+                                <li>
+                                    <i class="icon-clock"></i>
+                                    <span>
+														Serving 7 days a week from 9:00 - 22:00
+													</span>
+                                </li>
+                                <li>
+                                    <i class="icon-envelope"></i>
+                                    <span>
+														<em><a href="mailto:support@domain.com">support@booklibrary.com</a></em>
+														<em><a href="mailto:info@domain.com">info@booklibrary.com</a></em>
+													</span>
+                                </li>
+                            </ul>
+                            <ul class="tg-socialicons">
+                                <li class="tg-facebook"><a href="javascript:void(0);"><i class="fa fa-facebook"></i></a></li>
+                                <li class="tg-twitter"><a href="javascript:void(0);"><i class="fa fa-twitter"></i></a></li>
+                                <li class="tg-linkedin"><a href="javascript:void(0);"><i class="fa fa-linkedin"></i></a></li>
+                                <li class="tg-googleplus"><a href="javascript:void(0);"><i class="fa fa-google-plus"></i></a></li>
+                                <li class="tg-rss"><a href="javascript:void(0);"><i class="fa fa-rss"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                        <div class="tg-footercol tg-widget tg-widgetnavigation">
+                            <div class="tg-widgettitle">
+                                <h3>We guarantee</h3>
+                            </div>
+
+                            <div class="tg-widgetcontent">
+                                <ul>
+                                    <li><a href="javascript:void(0);">Always respect customers</a></li>
+                                    <li><a href="javascript:void(0);">Confidentiality of necessary information</a></li>
+                                    <li><a href="javascript:void(0);">Genuine books</a></li>
+                                    <li><a href="javascript:void(0);">Comply with buying and selling regulations</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tg-footerbar">
+        <a id="tg-btnbacktotop" class="tg-btnbacktotop" href="javascript:void(0);"><i class="icon-chevron-up"></i></a>
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <span class="tg-paymenttype"><img src="../images/paymenticon.png" alt="image description"></span>
+                    <span class="tg-copyright">2023 All Rights Reserved By &copy; Book Library</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<script src="../js/vendor/jquery-library.js"></script>
+<script src="../js/vendor/bootstrap.min.js"></script>
+<script src="../js/owl.carousel.min.js"></script>
+<script src="../js/jquery.vide.min.js"></script>
+<script src="../js/countdown.js"></script>
+<script src="../js/jquery-ui.js"></script>
+<script src="../js/parallax.js"></script>
+<script src="../js/countTo.js"></script>
+<script src="../js/appear.js"></script>
+<script src="../js/gmap3.js"></script>
+<script src="../js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function updateSubtotal(index) {
+        var quantityInput = document.getElementById("quantity" + index);
+        var quantity = parseInt(quantityInput.value);
+
+        if (isNaN(quantity) || quantity < 1) {
+            quantityInput.value = 1;
+            quantity = 1;
+        }
+
+        var unitPrice = parseFloat(document.getElementById("unitPrice" + index).value);
+        var subtotal = unitPrice * quantity;
+        var subtotalElement = document.getElementById("subtotal" + index);
+        subtotalElement.setAttribute('data-quantity', quantity);
+        subtotalElement.innerText = formatNumber(subtotal) + " VND";
+
+        updateTotal();
+        updateSeriesTotals();
+    }
+
+    function updateQuantity(index, bookId) {
+        var quantityInput = document.getElementById("quantity" + index);
+        var quantity = parseInt(quantityInput.value);
+        var maxStock = parseInt(document.getElementById("numberInStock" + index).value);
+
+        if (isNaN(quantity) || quantity < 1) {
+            quantityInput.value = 1;
+            quantity = 1;
+        }
+
+        if (quantity > maxStock) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Stock Limit',
+                text: 'Only ' + maxStock + ' copies available!',
+                timer: 2000,
+                showConfirmButton: false
+            });
+            quantityInput.value = maxStock;
+            quantity = maxStock;
+        }
+
+        updateSubtotal(index);
+    }
+
+    function decreaseQuantity(index) {
+        var quantityInput = document.getElementById("quantity" + index);
+        var currentValue = parseInt(quantityInput.value);
+        if (currentValue > 1) {
+            quantityInput.value = currentValue - 1;
+            updateSubtotal(index);
+        }
+    }
+
+    function increaseQuantity(index) {
+        var quantityInput = document.getElementById("quantity" + index);
+        var currentValue = parseInt(quantityInput.value);
+        var maxStock = parseInt(document.getElementById("numberInStock" + index).value);
+
+        if (currentValue < maxStock) {
+            quantityInput.value = currentValue + 1;
+            updateSubtotal(index);
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Stock Limit',
+                text: 'Only ' + maxStock + ' copies available!',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+    }
+  function formatNumber(num) {
+    return Number(num).toLocaleString('en-US');
+}
+           function removeBookFromCart(bookId) {
+        Swal.fire({
+            title: 'Remove Book?',
+            text: "Are you sure you want to remove this book from your cart?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: '<i class="fa fa-check"></i> Yes, remove it!',
+            cancelButtonText: '<i class="fa fa-times"></i> Cancel',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Redirect to remove-book endpoint (will reload page and re-detect series bundles)
+                window.location.href = '/remove-book?id=' + bookId;
+            }
+        });
+    }
+
+
+    function toggleSelectAll() {
+        var selectAllCheckbox = document.getElementById("selectAll");
+        var checkboxes = document.getElementsByClassName("item-checkbox");
+
+        for (var i = 0; i < checkboxes.length; i++) {
+            checkboxes[i].checked = selectAllCheckbox.checked;
+        }
+
+        updateTotal();
+        updateSeriesTotals();
+    }
+
+    function updateSeriesTotals() {
+    var seriesCheckboxes = document.querySelectorAll('.series-checkbox');
+    var seriesData = {};
+    var seriesQuantities = {}; // Track quantities per series
+
+    // Group by series and track quantities
+    seriesCheckboxes.forEach(function(checkbox) {
+        if (checkbox.checked) {
+            var seriesId = checkbox.getAttribute('data-series-id');
+            var row = checkbox.closest('tr');
+            var subtotal = row.querySelector('.item-subtotal');
+            var price = parseFloat(subtotal.getAttribute('data-price'));
+            var quantity = parseInt(subtotal.getAttribute('data-quantity'));
+            var bookId = checkbox.value;
+
+            if (!seriesData[seriesId]) {
+                seriesData[seriesId] = 0;
+                seriesQuantities[seriesId] = {};
+            }
+
+            seriesQuantities[seriesId][bookId] = quantity;
+        }
+    });
+
+    // Calculate discount for each series
+    var totalSavings = 0;
+    for (var seriesId in seriesData) {
+        var quantities = seriesQuantities[seriesId];
+        var bookQuantities = Object.values(quantities);
+
+        // Find minimum quantity (number of complete sets)
+        var minQuantity = Math.min(...bookQuantities);
+
+        // Calculate discount percentage
+        var discountPercentage = 0.0;
+        if (minQuantity >= 2) {
+            discountPercentage = 0.10; // 10% for 2+ sets
+        } else if (minQuantity === 1) {
+            discountPercentage = 0.05; // 5% for 1 set
+        }
+
+        // Calculate original price for complete sets only
+        var originalForSets = 0;
+        seriesCheckboxes.forEach(function(checkbox) {
+            if (checkbox.checked && checkbox.getAttribute('data-series-id') === seriesId) {
+                var row = checkbox.closest('tr');
+                var subtotal = row.querySelector('.item-subtotal');
+                var price = parseFloat(subtotal.getAttribute('data-price'));
+
+                // Only count up to minQuantity (complete sets)
+                originalForSets += price * minQuantity;
+            }
+        });
+
+        var discount = originalForSets * discountPercentage;
+
+        // Calculate total (including extra copies)
+        var totalOriginal = 0;
+        seriesCheckboxes.forEach(function(checkbox) {
+            if (checkbox.checked && checkbox.getAttribute('data-series-id') === seriesId) {
+                var row = checkbox.closest('tr');
+                var subtotal = row.querySelector('.item-subtotal');
+                var price = parseFloat(subtotal.getAttribute('data-price'));
+                var quantity = parseInt(subtotal.getAttribute('data-quantity'));
+                totalOriginal += price * quantity;
+            }
+        });
+
+        var discounted = totalOriginal - discount;
+
+        var originalEl = document.querySelector('.series-original[data-series-id="' + seriesId + '"]');
+        var discountedEl = document.querySelector('.series-discounted[data-series-id="' + seriesId + '"]');
+        var savingsEl = document.querySelector('.series-savings[data-series-id="' + seriesId + '"]');
+
+        if (originalEl) originalEl.textContent = formatNumber(totalOriginal);
+        if (discountedEl) discountedEl.textContent = formatNumber(discounted);
+        if (savingsEl) savingsEl.textContent = formatNumber(discount);
+
+        totalSavings += discount;
+    }
+
+    // Show/hide total savings
+    if (totalSavings > 0) {
+        document.getElementById('seriesSavingsTotal').style.display = 'block';
+        document.getElementById('totalSeriesSavings').textContent = formatNumber(totalSavings);
+    } else {
+        document.getElementById('seriesSavingsTotal').style.display = 'none';
+    }
+}
+
+    // NEW: Check if all books in a series are selected
+    function checkSeriesSelection() {
+        updateSeriesTotals();
+    }
+
+    function updateTotal() {
+    var checkboxes = document.getElementsByClassName("item-checkbox");
+    var total = 0;
+    var selectedCount = 0;
+    var totalSeriesDiscount = 0;
+
+    for (var i = 0; i < checkboxes.length; i++) {
+        if (checkboxes[i].checked) {
+            selectedCount++;
+            var row = checkboxes[i].closest('tr');
+            var subtotalElement = row.querySelector('.item-subtotal');
+            var price = parseFloat(subtotalElement.getAttribute('data-price'));
+            var quantity = parseInt(subtotalElement.getAttribute('data-quantity'));
+            total += price * quantity;
+        }
+    }
+
+    // ===== FIX: TÍNH DISCOUNT CHỈ CHO COMPLETE SETS =====
+    var seriesCheckboxes = document.querySelectorAll('.series-checkbox');
+    var seriesQuantities = {};
+
+    // Group by series and track quantities
+    seriesCheckboxes.forEach(function(checkbox) {
+        if (checkbox.checked) {
+            var seriesId = checkbox.getAttribute('data-series-id');
+            var row = checkbox.closest('tr');
+            var subtotal = row.querySelector('.item-subtotal');
+            var price = parseFloat(subtotal.getAttribute('data-price'));
+            var quantity = parseInt(subtotal.getAttribute('data-quantity'));
+            var bookId = checkbox.value;
+
+            if (!seriesQuantities[seriesId]) {
+                seriesQuantities[seriesId] = {};
+            }
+            seriesQuantities[seriesId][bookId] = {price: price, quantity: quantity};
+        }
+    });
+
+    // Calculate discount for each series (ONLY for complete sets)
+    for (var seriesId in seriesQuantities) {
+        var books = seriesQuantities[seriesId];
+        var quantities = Object.values(books).map(b => b.quantity);
+
+        // Find minimum quantity (number of complete sets)
+        var minQuantity = Math.min(...quantities);
+
+        // Calculate discount percentage
+        var discountPercentage = 0.0;
+        if (minQuantity >= 2) {
+            discountPercentage = 0.10; // 10%
+        } else if (minQuantity === 1) {
+            discountPercentage = 0.05; // 5%
+        }
+
+        // Calculate discount ONLY for complete sets
+        var discountableAmount = 0;
+        for (var bookId in books) {
+            var book = books[bookId];
+            // Only count up to minQuantity
+            discountableAmount += book.price * minQuantity;
+        }
+
+        var discount = discountableAmount * discountPercentage;
+        totalSeriesDiscount += discount;
+    }
+
+    var finalTotal = total - totalSeriesDiscount;
+
+    document.getElementById("totalCart").innerText = formatNumber(finalTotal) + " VND";
+
+    // Show series savings
+    if (totalSeriesDiscount > 0) {
+        document.getElementById('seriesSavingsTotal').style.display = 'block';
+        document.getElementById('totalSeriesSavings').textContent = formatNumber(totalSeriesDiscount);
+    } else {
+        document.getElementById('seriesSavingsTotal').style.display = 'none';
+    }
+
+    var selectAllCheckbox = document.getElementById("selectAll");
+    selectAllCheckbox.checked = (selectedCount === checkboxes.length && checkboxes.length > 0);
+
+    updateSeriesTotals();
+}
+
+    function validateSelection() {
+        var checkboxes = document.getElementsByClassName("item-checkbox");
+        var hasSelection = false;
+
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked) {
+                hasSelection = true;
+                break;
+            }
+        }
+
+        if (!hasSelection) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'No products selected',
+                text: 'Please select at least one product!',
+                confirmButtonText: 'OK'
+            });
+            return false;
+        }
+
+        return true;
+    }
+
+    function confirmClearCart() {
+        Swal.fire({
+            title: 'Clear All Items?',
+            text: "Are you sure you want to remove all items from your cart?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, clear all!',
+            cancelButtonText: 'Cancel',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = '/clear-cart';
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var successMsg = document.getElementById('flashSuccess');
+        var errorMsg = document.getElementById('flashError');
+
+        if (successMsg && successMsg.textContent.trim() !== '') {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: successMsg.textContent,
+                timer: 3000,
+                showConfirmButton: false
+            });
+        }
+
+        if (errorMsg && errorMsg.textContent.trim() !== '') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: errorMsg.textContent,
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+
+        // Initialize totals
+        updateTotal();
+        updateSeriesTotals();
+
+        // Auto-select all series books on load
+        var seriesCheckboxes = document.querySelectorAll('.series-checkbox');
+        seriesCheckboxes.forEach(function(checkbox) {
+            checkbox.checked = true;
+        });
+        updateTotal();
+    });
+</script>
+</body>
+</html>

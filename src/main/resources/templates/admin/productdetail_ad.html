@@ -1,0 +1,895 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="utf-8">
+    <title>Book Library | Book Detail - Admin</title>
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/normalize.css">
+    <link rel="stylesheet" href="../css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/icomoon.css">
+    <link rel="stylesheet" href="../css/jquery-ui.css">
+    <link rel="stylesheet" href="../css/owl.carousel.css">
+    <link rel="stylesheet" href="../css/transitions.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/color.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <script src="../js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
+
+    <style>
+        .form-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        .form-section h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        /* View mode styles - label: value format */
+        .info-row {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #555;
+            min-width: 180px;
+            padding-right: 15px;
+        }
+
+        .info-value {
+            color: #333;
+            flex: 1;
+            line-height: 1.6;
+        }
+
+        .info-value.empty {
+            color: #999;
+            font-style: italic;
+        }
+
+        .view-mode-text {
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-height: 42px;
+            display: flex;
+            align-items: center;
+        }
+
+        .translator-checkbox-list {
+            background-color: #ffffff;
+            padding: 0;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            max-height: 300px;
+            overflow-y: auto;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .translator-checkbox-list > div {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s ease;
+        }
+
+        .translator-checkbox-list > div:hover {
+            background-color: #f8f9fa;
+        }
+
+        .translator-checkbox-list > div:last-child {
+            border-bottom: none;
+        }
+
+        .translator-checkbox-list label {
+            margin: 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            user-select: none;
+        }
+
+        .translator-checkbox-list input[type="checkbox"] {
+            margin-right: 10px;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+            accent-color: #007bff;
+        }
+
+        .translator-display-container {
+            background-color: #f8f9fa;
+            padding: 12px;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+            min-height: 50px;
+            margin-bottom: 10px;
+        }
+
+        .translator-badge {
+            background-color: #007bff;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-right: 10px;
+            margin-bottom: 8px;
+        }
+
+        /* Image container for view mode */
+        .view-image-container {
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: #fff;
+            text-align: center;
+        }
+
+        .view-image-container img {
+            max-width: 100%;
+            max-height: 400px;
+            display: block;
+            margin: 0 auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+
+<body>
+<header id="tg-header" class="tg-header tg-haslayout">
+    <div class="tg-topbar">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <div class="tg-userlogin">
+                        <div>
+                            <li style="list-style:none ;" class="menu-item-has-children"
+                                sec:authorize="isAuthenticated()">
+                                <a href=""> <i id="user_icon" class="fa fa-user"></i> Welcome <span
+                                        class="sr-only"></span></a>
+                                <div class="mega-menu user">
+                                    <ul class="tg-themetabnav " role="tablist">
+                                        <li><a th:href="@{/profile}">Profile<span class="sr-only">(current)</span></a>
+                                        </li>
+                                        <li><a th:href="@{/orders}" sec:authorize="hasRole('USER')">Orders<span
+                                                class="sr-only">(current)</span></a></li>
+                                        <li><a class="tg-userlogout" th:href="@{/logout}">Logout<span class="sr-only">(current)</span></a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tg-middlecontainer" style="padding: 10px;">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <strong class="tg-logo"><a href="index-2.html"><img src="images/logo.png"
+                                                                        alt="company name here"></a></strong>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tg-navigationarea">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <nav id="tg-nav" class="tg-nav">
+                        <div id="tg-navigation" class="collapse navbar-collapse tg-navigation">
+                            <ul>
+                                <li><a th:href="@{/}">Home</a></li>
+                                <li><a th:href="@{/manage-product}" sec:authorize="hasRole('ADMIN')">Books</a></li>
+                                <li><a th:href="@{/manage-category}" sec:authorize="hasRole('ADMIN')">Categories</a>
+                                </li>
+                                <li><a th:href="@{/manage-author}" sec:authorize="hasRole('ADMIN')">Authors</a></li>
+                                <li><a th:href="@{/manage-user}" sec:authorize="hasRole('ADMIN')">Users</a></li>
+                                <li><a th:href="@{/manage-order}" sec:authorize="hasRole('ADMIN')">Orders</a></li>
+                                <li><a th:href="@{/manage-promotion}" sec:authorize="hasRole('ADMIN')">Promotions</a>
+                                </li>
+                                <li><a th:href="@{/statistic}" sec:authorize="hasRole('ADMIN')">Statistics</a></li>
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="tg-innerbanner tg-haslayout tg-parallax tg-bginnerbanner"
+     data-z-index="-100"
+     data-appear-top-offset="600"
+     data-parallax="scroll"
+     data-image-src="../images/parallax/bgparallax-07.jpg">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="tg-innerbannercontent">
+                    <h1 style="margin-bottom: 20px;"
+                        th:text="${action == 'view' ? 'View Book Information' : (action == 'edit' ? 'Edit Book Information' : 'Add New Book')}">
+                        Book information</h1>
+                    <ol class="tg-breadcrumb">
+                        <li><a href="javascript:void(0);">Home</a></li>
+                        <li><a href="javascript:void(0);">Books</a></li>
+                        <li class="tg-active"
+                            th:text="${action == 'view' ? 'View' : (action == 'edit' ? 'Edit' : 'Add')}"></li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form th:object="${book}" method="post" th:action="@{/admin/save-product}" enctype="multipart/form-data">
+    <main id="tg-main" class="tg-main tg-haslayout">
+        <div class="tg-sectionspace tg-haslayout">
+            <div class="container">
+                <div class="row">
+                    <input type="hidden" th:field="*{id}"/>
+                    <input type="hidden" th:field="*{newBook}"/>
+
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <!-- Error Message -->
+                        <div th:if="${error != null}" class='alert alert-danger alert-dismissible'
+                             role="alert"
+                             style="width: 100%; margin-bottom: 20px;">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <strong>Error:</strong> <span th:text="${error}"></span>
+                        </div>
+                    </div>
+
+                    <div id="tg-twocolumns" class="tg-twocolumns">
+                        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 pull-left">
+                            <div id="tg-content" class="tg-content">
+                                <div class="tg-productdetail">
+
+                                    <!-- ==================== VIEW MODE ==================== -->
+                                    <div th:if="${action == 'view'}">
+                                        <!-- BASIC INFORMATION -->
+                                        <div class="form-section">
+                                            <h3>Basic Information</h3>
+
+                                            <div class="info-row">
+                                                <div class="info-label">Title:</div>
+                                                <div class="info-value" th:text="${book.title}">Amanda</div>
+                                            </div>
+
+                                            <div class="info-row">
+                                                <div class="info-label">Author:</div>
+                                                <div class="info-value" th:text="${book.author?.name}">Tite Kubo</div>
+                                            </div>
+
+                                            <div class="info-row">
+                                                <div class="info-label">Description:</div>
+                                                <div class="info-value" th:text="${book.description}">A wonderful story
+                                                    about...
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- PUBLICATION DETAILS -->
+                                        <div class="form-section">
+                                            <h3>Publication Details</h3>
+
+                                            <div class="info-row">
+                                                <div class="info-label">Publication Date:</div>
+                                                <div class="info-value"
+                                                     th:text="${#temporals.format(book.date_publication, 'dd-MM-yyyy')}"
+                                                >15-05-2023
+                                                </div>
+                                            </div>
+
+                                            <div class="info-row">
+                                                <div class="info-label">Publisher:</div>
+                                                <div class="info-value" th:text="${book.publisher?.name}"
+                                                     th:classappend="${book.publisher == null ? 'empty' : ''}">
+                                                    <span th:if="${book.publisher != null}"
+                                                          th:text="${book.publisher.name}"></span>
+                                                    <span th:if="${book.publisher == null}">N/A</span>
+                                                </div>
+                                            </div>
+
+                                            <div class="info-row">
+                                                <div class="info-label">Category:</div>
+                                                <div class="info-value" th:text="${book.category?.name}">Fiction</div>
+                                            </div>
+
+                                            <div class="info-row">
+                                                <div class="info-label">Language:</div>
+                                                <div class="info-value" th:text="${book.language?.name}"
+                                                     th:classappend="${book.language == null ? 'empty' : ''}">
+                                                    <span th:if="${book.language != null}"
+                                                          th:text="${book.language.name}"></span>
+                                                    <span th:if="${book.language == null}">N/A</span>
+                                                </div>
+                                            </div>
+
+                                            <div class="info-row">
+                                                <div class="info-label">Translators:</div>
+                                                <div class="info-value">
+                                                    <div th:if="${book.bookTranslatorList != null && book.bookTranslatorList.size() > 0}">
+                                                        <span th:each="bt, iterStat: ${book.bookTranslatorList}">
+                                                            <span class="translator-badge">
+                                                                <i class="fa fa-user-circle"></i>
+                                                                <span>
+                                                                    <span th:text="${bt.translator.name}"></span>
+                                                                    <small th:text="'(' + ${bt.role} + ')'"></small>
+                                                                </span>
+                                                            </span>
+                                                        </span>
+                                                    </div>
+                                                    <span th:if="${book.bookTranslatorList == null || book.bookTranslatorList.size() == 0}"
+                                                          class="empty">
+                                                        No translators assigned
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- SERIES INFORMATION -->
+                                        <div class="form-section">
+                                            <h3>Series Information</h3>
+
+                                            <div class="info-row">
+                                                <div class="info-label">Series:</div>
+                                                <div class="info-value" th:text="${book.series?.name}"
+                                                     th:classappend="${book.series == null ? 'empty' : ''}">
+                                                    <span th:if="${book.series != null}"
+                                                          th:text="${book.series.name}"></span>
+                                                    <span th:if="${book.series == null}">N/A</span>
+                                                </div>
+                                            </div>
+
+                                            <div class="info-row">
+                                                <div class="info-label">Volume Number:</div>
+                                                <div class="info-value" th:text="${book.volumeNumber}"
+                                                     th:classappend="${book.volumeNumber == null ? 'empty' : ''}">
+                                                    <span th:if="${book.volumeNumber != null}"
+                                                          th:text="${book.volumeNumber}"></span>
+                                                    <span th:if="${book.volumeNumber == null}">N/A</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- PHYSICAL DETAILS -->
+                                        <div class="form-section">
+                                            <h3>Physical Details</h3>
+
+                                            <div class="info-row">
+                                                <div class="info-label">Number of Pages:</div>
+                                                <div class="info-value" th:text="${book.number_page}">350</div>
+                                            </div>
+
+                                            <div class="info-row">
+                                                <div class="info-label">Size:</div>
+                                                <div class="info-value" th:text="${book.size}"
+                                                     th:classappend="${book.size == null ? 'empty' : ''}">
+                                                    <span th:if="${book.size != null}" th:text="${book.size}"></span>
+                                                    <span th:if="${book.size == null}">N/A</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- PRICING & INVENTORY -->
+                                        <div class="form-section">
+                                            <h3>Pricing & Inventory</h3>
+
+                                            <div class="info-row">
+                                                <div class="info-label">Price:</div>
+                                                <div class="info-value" th:text="${book.price + ' VND'}">150,000 VND
+                                                </div>
+                                            </div>
+
+                                            <div class="info-row">
+                                                <div class="info-label">Stock Quantity:</div>
+                                                <div class="info-value" th:text="${book.number_in_stock + ' copies'}">50
+                                                    copies
+                                                </div>
+                                            </div>
+
+                                            <div class="info-row">
+                                                <div class="info-label">Number Sold:</div>
+                                                <div class="info-value" th:text="${book.number_sold + ' copies'}">120
+                                                    copies
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- TIMESTAMP INFORMATION -->
+                                        <div class="form-section">
+                                            <h3>System Information</h3>
+
+                                            <div class="info-row">
+                                                <div class="info-label">Created At:</div>
+                                                <div class="info-value"
+                                                     th:text="${#dates.format(book.created_at, 'dd-MM-yyyy')}">
+                                                    2023-01-15
+                                                    10:30:00
+                                                </div>
+                                            </div>
+
+                                            <div class="info-row" th:if="${book.updated_at != null}">
+                                                <div class="info-label">Last Updated:</div>
+                                                <div class="info-value"
+                                                     th:text="${#dates.format(book.updated_at, 'dd-MM-yyyy')}">
+                                                    2023-06-20
+                                                    14:45:00
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- ==================== EDIT/CREATE MODE ==================== -->
+                                    <div th:if="${action != 'view'}">
+                                        <input th:if="${action == 'edit'}" type="hidden" th:field="*{title}">
+                                        <input th:if="${action == 'edit'}" type="hidden" name="authorInfo"
+                                               th:value="${book.author?.name}">
+                                        <input th:if="${action == 'edit'}" type="hidden" th:field="*{number_page}">
+                                        <input th:if="${action == 'edit'}" type="hidden" name="size"
+                                               th:value="${book.size}">
+                                        <!-- BASIC INFORMATION -->
+                                        <div class="form-section">
+                                            <h3>Basic Information</h3>
+                                            <div class="row">
+                                                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                                    <div class="form-group">
+                                                        <label><span style="color: red;">*</span>Title</label>
+                                                        <!-- EDIT mode: show as read-only text -->
+                                                        <input th:if="${action == 'edit'}"
+                                                               th:value="${book.title}"
+                                                               type="text"
+                                                               class="form-control"
+                                                               readonly
+                                                               style="background-color: #e9ecef; cursor: not-allowed;">
+                                                        <!-- CREATE mode: editable -->
+                                                        <input th:if="${action == 'create'}"
+                                                               th:field="*{title}"
+                                                               type="text"
+                                                               class="form-control"
+                                                               required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                                    <div class="form-group">
+                                                        <label><span style="color: red;">*</span>Author</label>
+                                                        <!-- EDIT mode: show as read-only text -->
+                                                        <input th:if="${action == 'edit'}"
+                                                               th:value="${book.author?.name}"
+                                                               type="text"
+                                                               class="form-control"
+                                                               readonly
+                                                               style="background-color: #e9ecef; cursor: not-allowed;">
+                                                        <!-- CREATE mode: dropdown -->
+                                                        <select th:if="${action == 'create'}"
+                                                                class="form-control"
+                                                                name="authorInfo"
+                                                                required>
+                                                            <option value="">-- Select Author --</option>
+                                                            <option th:if="${book.author != null}"
+                                                                    th:text="${book.author.name}"
+                                                                    th:value="${book.author.name}"
+                                                                    selected></option>
+                                                            <th:block th:each="author: ${authorList}">
+                                                                <option th:if="${book.author == null || !author.name.equals(book.author.name)}"
+                                                                        th:text="${author.name}"
+                                                                        th:value="${author.name}"></option>
+                                                            </th:block>
+                                                        </select>
+                                                        <!-- Hidden field for EDIT mode to send author info -->
+                                                        <input th:if="${action == 'edit'}"
+                                                               type="hidden"
+                                                               name="authorInfo"
+                                                               th:value="${book.author?.name}">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                                    <div class="form-group">
+                                                        <label><span style="color: red;"
+                                                                     th:if="${action == 'create'}">*</span>Description</label>
+                                                        <textarea th:field="*{description}"
+                                                                  class="form-control"
+                                                                  rows="4"
+                                                                  th:required="${action == 'create'}"></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- PUBLICATION DETAILS -->
+                                        <div class="form-section">
+                                            <h3>Publication Details</h3>
+                                            <div class="row">
+                                                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                                    <div class="form-group">
+                                                        <label><span style="color: red;"
+                                                                     th:if="${action == 'create'}">*</span>Publication
+                                                            date</label>
+                                                        <input type="date"
+                                                               th:field="*{date_publication}"
+                                                               class="form-control"
+                                                               th:required="${action == 'create'}">
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                                    <div class="form-group">
+                                                        <label>Publisher</label>
+                                                        <select name="publisherInfo"
+                                                                class="form-control">
+                                                            <option value="">-- Select Publisher (Optional) --</option>
+                                                            <option th:if="${book.publisher != null}"
+                                                                    th:text="${book.publisher.name}"
+                                                                    th:value="${book.publisher.name}"
+                                                                    selected></option>
+                                                            <th:block th:each="publisher: ${publisherList}">
+                                                                <option th:if="${book.publisher == null || !publisher.name.equals(book.publisher.name)}"
+                                                                        th:text="${publisher.name}"
+                                                                        th:value="${publisher.name}"></option>
+                                                            </th:block>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                                    <div class="form-group">
+                                                        <label><span style="color: red;">*</span>Category</label>
+                                                        <!-- Both EDIT and CREATE mode: dropdown (editable) -->
+                                                        <select name="categoryInfo"
+                                                                class="form-control"
+                                                                required>
+                                                            <option th:if="${action == 'create'}" value="">-- Select
+                                                                Category --
+                                                            </option>
+                                                            <option th:if="${book.category != null}"
+                                                                    th:text="${book.category.name}"
+                                                                    th:value="${book.category.name}"
+                                                                    selected></option>
+                                                            <th:block th:each="category: ${categoryList}">
+                                                                <option th:if="${book.category == null || !category.name.equals(book.category.name)}"
+                                                                        th:text="${category.name}"
+                                                                        th:value="${category.name}"></option>
+                                                            </th:block>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                                    <div class="form-group">
+                                                        <label>Language</label>
+                                                        <select name="languageInfo"
+                                                                class="form-control">
+                                                            <option value="">-- Select Language (Optional) --</option>
+                                                            <option th:if="${book.language != null}"
+                                                                    th:text="${book.language.name}"
+                                                                    th:value="${book.language.name}"
+                                                                    selected></option>
+                                                            <th:block th:each="language: ${languageList}">
+                                                                <option th:if="${book.language == null || !language.name.equals(book.language.name)}"
+                                                                        th:text="${language.name}"
+                                                                        th:value="${language.name}"></option>
+                                                            </th:block>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                                    <div class="form-group">
+                                                        <label><strong>Translators</strong></label>
+                                                        <div class="translator-checkbox-list">
+                                                            <div th:if="${translatorList != null && translatorList.size() > 0}">
+                                                                <div th:each="translator: ${translatorList}">
+                                                                    <label>
+                                                                        <input type="checkbox"
+                                                                               name="translatorIds"
+                                                                               th:value="${translator.id}"
+                                                                               th:checked="${action == 'edit' && #lists.contains(book.bookTranslatorList?.![translator.id], translator.id)}">
+                                                                        <span th:text="${translator.name}"></span>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <div th:if="${translatorList == null || translatorList.size() == 0}">
+                                                                <div style="padding: 20px; text-align: center; color: #6c757d;">
+                                                                    <i class="fa fa-info-circle"
+                                                                       style="margin-right: 8px;"></i>
+                                                                    <span style="font-style: italic;">No translators available</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <small style="color: #6c757d; display: block; margin-top: 8px;">
+                                                            <i class="fa fa-check-square-o"
+                                                               style="margin-right: 4px;"></i>
+                                                            Select one or more translators for this book
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- SERIES INFORMATION -->
+                                        <div class="form-section">
+                                            <h3>Series Information</h3>
+                                            <div class="row">
+                                                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                                    <div class="form-group">
+                                                        <label>Series</label>
+                                                        <select name="seriesInfo"
+                                                                class="form-control">
+                                                            <option value="">-- Select Series (Optional) --</option>
+                                                            <option th:if="${book.series != null}"
+                                                                    th:text="${book.series.name}"
+                                                                    th:value="${book.series.name}"
+                                                                    selected></option>
+                                                            <th:block th:each="series: ${seriesList}">
+                                                                <option th:if="${book.series == null || !series.name.equals(book.series.name)}"
+                                                                        th:text="${series.name}"
+                                                                        th:value="${series.name}"></option>
+                                                            </th:block>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                                    <div class="form-group">
+                                                        <label>Volume Number</label>
+                                                        <input type="number"
+                                                               th:field="*{volumeNumber}"
+                                                               min="1"
+                                                               class="form-control"
+                                                               placeholder="Enter volume number if part of series">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- PHYSICAL DETAILS -->
+                                        <div class="form-section">
+                                            <h3>Physical Details</h3>
+                                            <div class="row">
+                                                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                                    <div class="form-group">
+                                                        <label><span style="color: red;">*</span>Number of pages</label>
+                                                        <!-- EDIT mode: read-only -->
+                                                        <input th:if="${action == 'edit'}"
+                                                               th:value="${book.number_page}"
+                                                               type="number"
+                                                               class="form-control"
+                                                               readonly
+                                                               style="background-color: #e9ecef; cursor: not-allowed;">
+                                                        <!-- CREATE mode: editable -->
+                                                        <input th:if="${action == 'create'}"
+                                                               type="number"
+                                                               th:field="*{number_page}"
+                                                               min="1"
+                                                               class="form-control"
+                                                               required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                                    <div class="form-group">
+                                                        <label>Size</label>
+                                                        <!-- EDIT mode: read-only -->
+                                                        <input th:if="${action == 'edit'}"
+                                                               th:value="${book.size}"
+                                                               type="text"
+                                                               class="form-control"
+                                                               readonly
+                                                               style="background-color: #e9ecef; cursor: not-allowed;">
+                                                        <!-- CREATE mode: editable -->
+                                                        <input th:if="${action == 'create'}"
+                                                               type="text"
+                                                               name="size"
+                                                               th:value="${book.size}"
+                                                               class="form-control"
+                                                               placeholder="e.g., 14.5 x 20.5 cm">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- PRICING & INVENTORY -->
+                                        <div class="form-section">
+                                            <h3>Pricing & Inventory</h3>
+                                            <div class="row">
+                                                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                                    <div class="form-group">
+                                                        <label><span style="color: red;">*</span>Price</label>
+                                                        <input type="number"
+                                                               th:field="*{price}"
+                                                               min="1"
+                                                               step="0.01"
+                                                               class="form-control"
+                                                               th:required="${action == 'create'}">
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                                    <div class="form-group">
+                                                        <label><span style="color: red;">*</span>Stock Quantity</label>
+                                                        <input type="number"
+                                                               name="stock"
+                                                               th:value="${book.number_in_stock}"
+                                                               min="0"
+                                                               class="form-control"
+                                                               th:required="${action == 'create'}"
+                                                               placeholder="Number of copies in stock">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- IMAGE SECTION -->
+                        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 pull-right">
+                            <aside id="tg-sidebar" class="tg-sidebar">
+                                <!-- VIEW MODE - Just display image -->
+                                <div th:if="${action == 'view'}">
+                                    <div class="view-image-container">
+                                        <h4 style="margin-top: 0; color: #555;">Book Cover</h4>
+                                        <img th:src="${book.id != null ? '/bookImage?id=' + book.id : ''}"
+                                             alt="Book Cover"
+                                             style="max-width: 100%; max-height: 400px;">
+                                    </div>
+                                </div>
+
+                                <!-- EDIT/CREATE MODE - Upload functionality -->
+                                <div th:if="${action != 'view'}">
+                                    <button type="button"
+                                            id="book-upload-btn"
+                                            class="btn btn-success"
+                                            style="margin-left: -150px;">Upload
+                                    </button>
+
+                                    <div class="tg-widget tg-widgetsearch"
+                                         style="border: 2px dotted; max-width: 230px; margin-top: 70px; height: 300px; margin-left: 50px;">
+                                        <figure class="tg-featureimg">
+                                            <input type="file"
+                                                   id="book-image"
+                                                   name="fileData"
+                                                   accept="image/*"
+                                                   style="display: none;">
+                                            <img id="image-preview"
+                                                 th:src="${book.id != null ? '/bookImage?id=' + book.id : ''}"
+                                                 style="max-width: 100%; max-height: 280px; display: block;">
+                                        </figure>
+                                    </div>
+                                </div>
+                            </aside>
+                        </div>
+                    </div>
+
+                    <br>
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <!-- Back button for VIEW mode -->
+                        <a th:if="${action == 'view'}" th:href="@{/admin/manage-product}">
+                            <button type="button" class="btn btn-default pull-right">
+                                <i class="fa fa-arrow-left"></i> Back to List
+                            </button>
+                        </a>
+
+                        <!-- Add button for CREATE mode -->
+                        <button th:if="${action == 'create'}"
+                                type="button"
+                                class="btn btn-primary pull-right"
+                                data-toggle="modal"
+                                data-target="#myModal_add">
+                            <i class="fa fa-plus"></i> Add Book
+                        </button>
+
+                        <!-- Save button for EDIT mode -->
+                        <button th:if="${action == 'edit'}"
+                                type="button"
+                                class="btn btn-primary pull-right"
+                                data-toggle="modal"
+                                data-target="#myModal_save">
+                            <i class="fa fa-save"></i> Save
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Add -->
+    <div th:if="${action == 'create'}" class="modal fade" id="myModal_add" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                    <h4 class="modal-title" style="text-transform: none;">Are you sure you want to add this book?</h4>
+                </div>
+                <div class="modal-body">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Save -->
+    <div th:if="${action == 'edit'}" class="modal fade" id="myModal_save" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                    <h4 class="modal-title" style="text-transform: none;">Are you sure you want to update this
+                        information?</h4>
+                </div>
+                <div class="modal-body">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script src="../js/vendor/jquery-library.js"></script>
+<script src="../js/vendor/bootstrap.min.js"></script>
+<script src="../js/owl.carousel.min.js"></script>
+<script src="../js/jquery.vide.min.js"></script>
+<script src="../js/countdown.js"></script>
+<script src="../js/jquery-ui.js"></script>
+<script src="../js/parallax.js"></script>
+<script src="../js/countTo.js"></script>
+<script src="../js/appear.js"></script>
+<script src="../js/gmap3.js"></script>
+<script src="../js/main.js"></script>
+
+<script>
+    // Only run if not in view mode
+    const action = '[[${action}]]';
+
+    if (action !== 'view') {
+        const uploadBtn = document.querySelector('#book-upload-btn');
+        const fileInput = document.querySelector('#book-image');
+        const imagePreview = document.querySelector('#image-preview');
+
+        if (uploadBtn) {
+            uploadBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                fileInput.click();
+            });
+        }
+
+        if (fileInput) {
+            fileInput.addEventListener('change', function () {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        imagePreview.src = e.target.result;
+                        imagePreview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+    }
+</script>
+</body>
+</html>

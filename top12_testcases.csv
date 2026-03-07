@@ -1,0 +1,14 @@
+TC_ID,Title,Module,Preconditions,Steps,Test Data,Expected Result,Priority
+TC01,Signup valid user,User/Account,None,1. Open /signup 2. Fill valid form 3. Submit,username=testuser1;password=Abc12345;confirmPassword=Abc12345;fullName=Test User;email=test1@example.com;address=Hanoi,Redirect to /login with success message; Account and User persisted; password stored encoded,P0
+TC02,Signup existing username,User/Account,Existing user with username 'existing1',1. Open /signup 2. Fill username=existing1 3. Submit,username=existing1;password=Abc12345;confirmPassword=Abc12345;...,Stay on signup with validation error (userNameError); no new account created,P0
+TC03,Add to cart quantity > stock,Cart,Book with id=5 stock=2,POST /add-to-cart with id=5 qty=5,id=5;quantity=5,Redirect back to detail-product with error about available stock; cart not updated,P0
+TC04,Confirm order with empty cart,Cart,Session cart empty,POST /confirm,,Redirect to /view-cart with error 'Your cart is empty!',P0
+TC05,Concurrent confirm stock race,Cart,Book id=7 stock=1; two user sessions with qty=1 each,Simulate two parallel POST /confirm from different sessions,One order created and stock decremented to 0; second confirm fails with out-of-stock error; no negative stock,P0
+TC06,Admin save-product duplicate,Admin,Admin logged in; existing book with title='X' author=2,POST /save-product with same title & author,title=X;authorId=2;...,Return to product edit with error message about duplicate; no new record,P0
+TC07,Detail-product canReview visibility,Comment,User has Completed order containing book id=5,GET /detail-product?id=5 while logged in,book_id=5;user=buyerUser,Page model contains canReview=true and comment form visible,P0
+TC08,Save-comment by non-purchaser,Comment,User logged in without completed order for book id=6,POST /save-comment with book_id=6,book_id=6;star=5;content=Nice,Redirect to detail-product with rejection; no comment saved,P0
+TC09,Book image invalid id,Images,/bookImage?id=999999,GET /bookImage?id=999999,,HTTP 404 response or friendly error page,P0
+TC10,Profile access unauthenticated,User,Not logged in,GET /profile,,Redirect to /login (or login page) with appropriate message,P0
+TC11,Change password wrong old,User,User logged in with known password,POST /change-password with wrong old password,old=wrong;new=Abc12345;confirm=Abc12345,Failure message; password unchanged,P0
+TC12,Uploads path traversal attempt,Images,None,GET /uploads/../../../application.properties,/uploads/../../../application.properties,Return 404/403; file outside uploadDir not served,P0
+

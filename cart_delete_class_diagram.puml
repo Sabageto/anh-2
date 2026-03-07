@@ -1,0 +1,112 @@
+@startuml Cart Delete Class Diagram
+
+!theme plain
+
+' ===== ENTITIES =====
+class CartItem {
+    - Integer id
+    - User user
+    - Book book
+    - Integer quantity
+    - Date createdAt
+    - Date updatedAt
+    + CartItem()
+    + CartItem(id, user, book, quantity, createdAt, updatedAt)
+}
+
+class User {
+    - Integer id
+    - String username
+    - String email
+    - String password
+    - String fullName
+    - String phone
+    - String address
+    - String role
+}
+
+class Book {
+    - Integer id
+    - String title
+    - String author
+    - Double price
+    - Integer numberInStock
+    - String description
+    - String imageUrl
+}
+
+' ===== REPOSITORY =====
+interface CartItemRepository {
+    + List<CartItem> findByUser(User user)
+    + Optional<CartItem> findByUserAndBook(User user, Book book)
+    + void deleteByUserAndBook(Integer userId, Integer bookId)
+    + boolean existsByUser(User user)
+    + void deleteByUser(User user)
+    + Integer sumQuantityByUser(User user)
+    + Double sumTotalAmountByUser(User user)
+}
+
+' ===== SERVICE =====
+class CartItemService {
+    - CartItemRepository cartItemRepository
+    - BookService bookService
+    + List<CartItem> getCartItems(User user)
+    + CartItem addBookToCart(User user, Integer bookId, Integer quantity)
+    + CartItem updateCartItem(User user, Integer bookId, Integer quantity)
+    + void removeCartItemByUserAndBook(User user, Integer bookId)
+    + void clearCart(User user)
+    + Double calculateTotalAmount(User user)
+    + Integer calculateTotalBooks(User user)
+    + boolean isCartEmpty(User user)
+}
+
+' ===== CONTROLLER =====
+class UserController {
+    - CartItemService cartItemService
+    - UserService userService
+    + String viewCart(Model model, HttpServletRequest request)
+    + String clearCart(HttpServletRequest request, RedirectAttributes redirectAttributes)
+    + String removeBook(HttpServletRequest request, @RequestParam Integer id)
+    + String addToCart(HttpServletRequest request, Model model, @RequestParam Integer id, @RequestParam Integer quantity, RedirectAttributes redirectAttributes)
+}
+
+' ===== RELATIONSHIPS =====
+CartItem "1" -- "1" User : belongs to
+CartItem "1" -- "1" Book : references
+CartItemService --> CartItemRepository : uses
+CartItemService --> BookService : uses
+UserController --> CartItemService : uses
+UserController --> UserService : uses
+
+' ===== INHERITANCE =====
+CartItemRepository ..|> JpaRepository : extends
+
+' ===== DELETE OPERATIONS FOCUS =====
+note right of CartItemService
+  **Delete Operations:**
+  • removeCartItemByUserAndBook()
+  • clearCart()
+  • updateCartItem() (deletes if quantity <= 0)
+end note
+
+note right of CartItemRepository
+  **Delete Operations:**
+  • deleteByUserAndBook()
+  • deleteByUser()
+end note
+
+note right of UserController
+  **Delete Endpoints:**
+  • /clear-cart (GET)
+  • /remove-book (GET)
+end note
+
+' ===== STEREOTYPES =====
+CartItem <<Entity>>
+User <<Entity>>
+Book <<Entity>>
+CartItemRepository <<Repository>>
+CartItemService <<Service>>
+UserController <<Controller>>
+
+@enduml

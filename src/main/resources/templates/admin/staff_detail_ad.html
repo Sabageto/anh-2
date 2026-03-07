@@ -1,0 +1,399 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Book Library | Staff Detail - Admin</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/normalize.css">
+    <link rel="stylesheet" href="../css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/icomoon.css">
+    <link rel="stylesheet" href="../css/jquery-ui.css">
+    <link rel="stylesheet" href="../css/owl.carousel.css">
+    <link rel="stylesheet" href="../css/transitions.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/color.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="../js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
+    <style>
+        .swal-wide {
+            width: 600px !important;
+        }
+    </style>
+</head>
+<body>
+<header id="tg-header" class="tg-header tg-haslayout">
+    <div class="tg-topbar">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <div class="tg-userlogin">
+                        <div>
+                            <li style="list-style:none ;" class="menu-item-has-children"
+                                sec:authorize="isAuthenticated()">
+                                <a href=""> <i id="user_icon" class="fa fa-user"></i> Welcome <span
+                                        class="sr-only"></span></a>
+                                <div class="mega-menu user">
+                                    <ul class="tg-themetabnav " role="tablist">
+                                        <li><a th:href="@{/profile}">Profile<span class="sr-only">(current)</span></a>
+                                        </li>
+                                        <li><a th:href="@{/orders}" sec:authorize="hasRole('USER')">Orders<span
+                                                class="sr-only">(current)</span></a></li>
+                                        <li><a class="tg-userlogout" th:href="@{/logout}">Logout<span class="sr-only">(current)</span></a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                            <br>
+                            <a class="nav-link text" th:href="@{/signup}"
+                               style="margin-right: 30px" sec:authorize="!isAuthenticated()">
+                                Sign up<span class="sr-only">(current)</span></a>
+                            <a class="nav-link text" th:href="@{/login}"
+                               sec:authorize="!isAuthenticated()">
+                                Login<span class="sr-only">(current)</span></a>
+                        </div>
+                    </div>
+                    <div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tg-middlecontainer" style="padding: 10px;">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <strong class="tg-logo"><a href="index-2.html"><img src="images/logo.png"
+                                                                        alt="company name here"></a></strong>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tg-navigationarea">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <nav id="tg-nav" class="tg-nav">
+                        <div class="navbar-header">
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                                    data-target="#tg-navigation" aria-expanded="false">
+                                <span class="sr-only">Toggle navigation</span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                        </div>
+                        <div id="tg-navigation" class="collapse navbar-collapse tg-navigation">
+                            <ul>
+                                <li><a th:href="@{/}">Home</a></li>
+                                <li><a th:href="@{/products}" sec:authorize="!hasRole('ADMIN')">Books</a></li>
+                                <li><a th:href="@{/manage-product}" sec:authorize="hasRole('ADMIN')">Books</a></li>
+                                <li><a th:href="@{/manage-category}" sec:authorize="hasRole('ADMIN')">Categories</a>
+                                </li>
+                                <li><a th:href="@{/manage-author}" sec:authorize="hasRole('ADMIN')">Authors</a></li>
+                                <li><a th:href="@{/manage-user}" sec:authorize="hasRole('ADMIN')">Users</a></li>
+                                <li><a th:href="@{/manage-staff}" sec:authorize="hasRole('ADMIN')">Staff</a></li>
+                                <li><a th:href="@{/manage-order}" sec:authorize="hasRole('ADMIN')">Orders</a></li>
+                                <li><a th:href="@{/manage-promotion}" sec:authorize="hasRole('ADMIN')">Promotions</a>
+                                </li>
+                                <li><a th:href="@{/statistic}" sec:authorize="hasRole('ADMIN')">Statistics</a></li>
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<div class="tg-innerbanner tg-haslayout tg-parallax tg-bginnerbanner" data-z-index="-100" data-appear-top-offset="600"
+     data-parallax="scroll" data-image-src="../images/parallax/bgparallax-07.jpg">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="tg-innerbannercontent">
+                    <h1 style="margin-bottom: 20px;">Staff Details</h1>
+                    <ol class="tg-breadcrumb">
+                        <li><a href="javascript:void(0);">Home</a></li>
+                        <li><a th:href="@{/manage-staff}">Staff</a></li>
+                        <li class="tg-active">Details</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<main id="tg-main" class="tg-main tg-haslayout">
+    <div class="tg-sectionspace tg-haslayout">
+        <div class="container">
+            <div>
+                <form id="form" th:object="${admin}" th:action="@{/admin/save-staff}" method="post">
+                    <input type="hidden" th:field="*{id}">
+                    <div>
+                        <div class="row">
+                            <!-- Left column: editable personal info -->
+                            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-5 pull-left">
+                                <h2>Personal Information</h2>
+                                <div class="form-group">
+                                    <label for="staffName"><span style="color: red;">*</span><strong>Full
+                                        name</strong></label>
+                                    <input type="text" th:field="*{name}" class="form-control" style="width: 600px;"
+                                           id="staffName" name="name" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="staffEmail"><span
+                                            style="color: red;">*</span><strong>Email</strong></label>
+                                    <input type="text" th:value="*{account.email}" class="form-control"
+                                           style="width: 600px;" id="staffEmail" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="staffPhone"><span style="color: red;">*</span><strong>Phone
+                                        number</strong></label>
+                                    <input type="text" th:field="*{phone}" class="form-control" style="width: 600px;"
+                                           id="staffPhone" name="phone" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="staffAddress"><span
+                                            style="color: red;">*</span><strong>Address</strong></label>
+                                    <input type="text" th:field="*{address}" class="form-control" style="width: 600px;"
+                                           id="staffAddress" name="address" readonly>
+                                </div>
+                            </div>
+                            <!-- Right column: read-only account info -->
+                            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-5 pull-right">
+                                <h2>Account</h2>
+                                <div class="form-group">
+                                    <label for="staffUsername"><span
+                                            style="color: red;">*</span><strong>Username</strong></label>
+                                    <input type="text" th:value="*{account.username}" class="form-control"
+                                           style="width: 400px;" id="staffUsername" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-2">
+                            <!-- Edit / Save buttons -->
+                            <button type="button" class="btn btn-warning" id="edit-btn">Edit</button>
+                            <button type="submit" class="btn btn-primary" id="save-btn" style="display:none;">Save
+                            </button>
+
+                            <!-- Back link -->
+                            <a th:href="@{/admin/manage-staff}" class="btn btn-default">Back</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+<footer id="tg-footer" class="tg-footer tg-haslayout">
+    <div class="tg-footerarea">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="tg-clientservices">
+                        <li class="tg-devlivery">
+                            <span class="tg-clientserviceicon"><i class="icon-rocket"></i></span>
+                            <div class="tg-titlesubtitle">
+                                <h3>Delivery </h3>
+                                <p>Fast nationwide delivery</p>
+                            </div>
+                        </li>
+                        <li class="tg-discount">
+                            <span class="tg-clientserviceicon"><i class="icon-tag"></i></span>
+                            <div class="tg-titlesubtitle">
+                                <h3>Pricing</h3>
+                                <p>Attractive and reasonable</p>
+                            </div>
+                        </li>
+                        <li class="tg-quality">
+                            <span class="tg-clientserviceicon"><i class="icon-leaf"></i></span>
+                            <div class="tg-titlesubtitle">
+                                <h3>Quality</h3>
+                                <p>Top quality products</p>
+                            </div>
+                        </li>
+                        <li class="tg-support">
+                            <span class="tg-clientserviceicon"><i class="icon-heart"></i></span>
+                            <div class="tg-titlesubtitle">
+                                <h3>24/7 Support</h3>
+                                <p>Serving you at any time</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="tg-threecolumns">
+                    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                        <div class="tg-footercol">
+                            <strong class="tg-logo"><a href="javascript:void(0);"><img src="../images/flogo.png"
+                                                                                       alt="image description"></a></strong>
+                            <ul class="tg-contactinfo">
+                                <li>
+                                    <i class="icon-apartment"></i>
+                                    <address>Ha Dong, Hanoi, Vietnam</address>
+                                </li>
+                                <li>
+                                    <i class="icon-phone-handset"></i>
+                                    <span>
+												<em>0812 567 889</em>
+												<em>+84 1245 6767</em>
+											</span>
+                                </li>
+                                <li>
+                                    <i class="icon-clock"></i>
+                                    <span>
+												Serving 7 days a week from 9:00 - 22:00
+											</span>
+                                </li>
+                            </ul>
+                            <ul class="tg-socialicons">
+                                <li class="tg-facebook"><a href="javascript:void(0);"><i class="fa fa-facebook"></i></a>
+                                </li>
+                                <li class="tg-twitter"><a href="javascript:void(0);"><i class="fa fa-twitter"></i></a>
+                                </li>
+                                <li class="tg-linkedin"><a href="javascript:void(0);"><i class="fa fa-linkedin"></i></a>
+                                </li>
+                                <li class="tg-googleplus"><a href="javascript:void(0);"><i
+                                        class="fa fa-google-plus"></i></a></li>
+                                <li class="tg-rss"><a href="javascript:void(0);"><i class="fa fa-rss"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                        <div class="tg-footercol tg-widget tg-widgetnavigation">
+                            <div class="tg-widgettitle">
+                                <h3>We guarantee</h3>
+                            </div>
+
+                            <div class="tg-widgetcontent">
+
+                                <ul>
+                                    <li><a href="javascript:void(0);">Always respect customers</a></li>
+                                    <li><a href="javascript:void(0);">Confidentiality of necessary information</a></li>
+                                    <li><a href="javascript:void(0);">Genuine books</a></li>
+                                    <li><a href="javascript:void(0);">Comply with purchase and sale regulations</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tg-footerbar">
+        <a id="tg-btnbacktotop" class="tg-btnbacktotop" href="javascript:void(0);"><i class="icon-chevron-up"></i></a>
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <span class="tg-paymenttype"><img src="../images/paymenticon.png" alt="image description"></span>
+                    <span class="tg-copyright">2023 All Rights Reserved By &copy; Book Library</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<script src="../js/vendor/jquery-library.js"></script>
+<script src="../js/vendor/bootstrap.min.js"></script>
+<script src="../js/owl.carousel.min.js"></script>
+<script src="../js/jquery.vide.min.js"></script>
+<script src="../js/countdown.js"></script>
+<script src="../js/jquery-ui.js"></script>
+<script src="../js/parallax.js"></script>
+<script src="../js/countTo.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="../js/appear.js"></script>
+<script src="../js/gmap3.js"></script>
+<script src="../js/main.js"></script>
+<script>
+    const editBtn = document.querySelector('#edit-btn');
+    const saveBtn = document.querySelector('#save-btn');
+    const staffName = document.querySelector('#staffName');
+    const staffEmail = document.querySelector('#staffEmail');
+    const staffPhone = document.querySelector('#staffPhone');
+    const staffAddress = document.querySelector('#staffAddress');
+    // Account fields stay read-only always
+    const staffUsername = document.querySelector('#staffUsername');
+    const staffPassword = document.querySelector('#staffPassword');
+
+    editBtn.addEventListener('click', function (event) {
+        event.preventDefault();
+
+        staffName.removeAttribute('readonly');
+        staffPhone.removeAttribute('readonly');
+        staffAddress.removeAttribute('readonly');
+        staffEmail.removeAttribute('readonly');
+
+        staffEmail.setAttribute('name', 'email');
+
+        staffUsername.setAttribute('readonly', 'readonly');
+        staffPassword.setAttribute('readonly', 'readonly');
+
+        saveBtn.style.display = 'block';
+        editBtn.style.display = 'none';
+    });
+</script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var showPopup = /*[[${showPopup}]]*/ false;
+    var successMessage = /*[[${successMessage}]]*/ '';
+
+    // Show SweetAlert2 popup if success message exists
+    if (showPopup && successMessage) {
+        Swal.fire({
+            position: 'top',
+            icon: 'success',
+            title: successMessage,
+            showConfirmButton: false,
+            timer: 3000,
+            toast: false,
+            customClass: {
+                popup: 'swal-wide'
+            }
+        });
+    }
+    /*]]>*/
+</script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var showPopup = /*[[${showPopup}]]*/ false;
+    var successMessage = /*[[${successMessage}]]*/ '';
+    var errorMessage = /*[[${errorMessage}]]*/ '';
+
+    // Success popup
+    if (showPopup && successMessage) {
+        Swal.fire({
+            position: 'top',
+            icon: 'success',
+            title: successMessage,
+            showConfirmButton: false,
+            timer: 3000,
+            customClass: {
+                popup: 'swal-wide'
+            }
+        });
+    }
+
+    // ✅ Error popup (nếu cần)
+    if (errorMessage) {
+        Swal.fire({
+            position: 'top',
+            icon: 'error',
+            title: 'Error',
+            text: errorMessage,
+            showConfirmButton: true,
+            customClass: {
+                popup: 'swal-wide'
+            }
+        });
+    }
+    /*]]>*/
+</script>
+</body>
+
+</html>

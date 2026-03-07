@@ -1,0 +1,559 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Book Library | Order Details</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/normalize.css">
+    <link rel="stylesheet" href="../css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/icomoon.css">
+    <link rel="stylesheet" href="../css/jquery-ui.css">
+    <link rel="stylesheet" href="../css/owl.carousel.css">
+    <link rel="stylesheet" href="../css/transitions.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/color.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <script src="../js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
+</head>
+<body>
+<header id="tg-header" class="tg-header tg-haslayout">
+    <div class="tg-topbar">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <div class="tg-userlogin">
+                        <div>
+                            <li style="list-style:none ;" class="menu-item-has-children"
+                                sec:authorize="isAuthenticated()">
+                                <a href=""> <i id="user_icon" class="fa fa-user"></i> Welcome <span
+                                        class="sr-only"></span></a>
+                                <div class="mega-menu user">
+                                    <ul class="tg-themetabnav " role="tablist">
+                                        <li><a th:href="@{/profile}">Profile<span class="sr-only">(current)</span></a>
+                                        </li>
+                                        <li><a th:href="@{/orders}" sec:authorize="hasRole('USER')">Orders<span
+                                                class="sr-only">(current)</span></a></li>
+                                        <li><a class="tg-userlogout" th:href="@{/logout}">Logout<span class="sr-only">(current)</span></a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                            <br>
+                            <a class="nav-link text" th:href="@{/signup}"
+                               style="margin-right: 30px" sec:authorize="!isAuthenticated()">
+                                Sign up<span class="sr-only">(current)</span></a>
+                            <a class="nav-link text" th:href="@{/login}"
+                               sec:authorize="!isAuthenticated()">
+                                Login<span class="sr-only">(current)</span></a>
+                        </div>
+                    </div>
+                    <div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tg-middlecontainer" style="padding: 10px;">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <strong class="tg-logo"><a href="index-2.html"><img src="images/logo.png"
+                                                                        alt="company name here"></a></strong>
+                    <div class="tg-wishlistandcart">
+                        <div sec:authorize="hasRole('USER')" class="dropdown tg-themedropdown tg-minicartdropdown">
+                            <a id="tg-minicart" class="tg-btnthemedropdown" data-toggle="dropdown" aria-haspopup="true"
+                               aria-expanded="false">
+                                <span class="tg-themebadge"
+                                      th:text="${cartTotalBooks != null ? cartTotalBooks : 0}">0</span>
+                                <a th:href="@{view-cart}"><i class="icon-cart"></i>
+                                    <span style="margin-left: 10px;">Cart</span></a>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tg-navigationarea">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <nav id="tg-nav" class="tg-nav">
+                        <div class="navbar-header">
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                                    data-target="#tg-navigation" aria-expanded="false">
+                                <span class="sr-only">Toggle navigation</span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                        </div>
+                        <div id="tg-navigation" class="collapse navbar-collapse tg-navigation">
+                            <ul>
+                                <li><a th:href="@{/}">Home</a></li>
+                                <li><a th:href="@{/products}" sec:authorize="!hasRole('ADMIN')">Books</a></li>
+                                <li><a th:href="@{/manage-product}" sec:authorize="hasRole('ADMIN')">Books</a></li>
+                                <li><a th:href="@{/manage-category}" sec:authorize="hasRole('ADMIN')">Categories</a>
+                                </li>
+                                <li><a th:href="@{/manage-author}" sec:authorize="hasRole('ADMIN')">Authors</a></li>
+                                <li><a th:href="@{/manage-user}" sec:authorize="hasRole('ADMIN')">Users</a></li>
+                                <li><a th:href="@{/manage-order}" sec:authorize="hasRole('ADMIN')">Orders</a></li>
+                                <li><a th:href="@{/manage-promotion}" sec:authorize="hasRole('ADMIN')">Promotions</a>
+                                </li>
+                                <li><a th:href="@{/statistic}" sec:authorize="hasRole('ADMIN')">Statistics</a></li>
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="tg-innerbanner tg-haslayout tg-parallax tg-bginnerbanner" data-z-index="-100" data-appear-top-offset="600"
+     data-parallax="scroll" data-image-src="../images/parallax/bgparallax-07.jpg">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="tg-innerbannercontent">
+                    <h1 style="margin-bottom: 20px;">Order Details</h1>
+                    <ol class="tg-breadcrumb">
+                        <li><a href="javascript:void(0);">Home</a></li>
+                        <li class="tg-active">Orders</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="tg-sectionspace tg-haslayout" style="padding-top: 50px; padding-bottom: 50px;">
+    <div class="container">
+        <div class="row">
+            <!-- Order Information Panel - Left Side -->
+            <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><i class="fa fa-file-text"></i> Order Information</h3>
+                    </div>
+                    <div class="panel-body">
+                        <table class="table table-bordered">
+                            <tbody>
+                            <tr>
+                                <th style="width: 40%;">Order ID</th>
+                                <td th:text="${order.id}">-</td>
+                            </tr>
+                            <tr>
+                                <th>Full Name</th>
+                                <td th:text="${order.customer_name}">-</td>
+                            </tr>
+                            <tr>
+                                <th>Phone Number</th>
+                                <td th:text="${order.phone}">-</td>
+                            </tr>
+                            <tr>
+                                <th>Address</th>
+                                <td th:text="${order.address}">-</td>
+                            </tr>
+                            <tr>
+                                <th>Order Date</th>
+                                <td th:text="${#temporals.format(order.createdAt, 'dd-MM-yyyy')}">-</td>
+                            </tr>
+
+                            <tr class="success">
+                                <th>Total Amount</th>
+                                <td>
+                                    <strong style="color: #5cb85c;"
+                                            th:with="finalTotal=${order.total_cost + (order.shipping_fee != null ? order.shipping_fee : 0)}"
+                                            th:text="${#numbers.formatInteger(finalTotal, 1, 'COMMA') + ' VND'}"></strong>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>Status</th>
+                                <td>
+                                    <span class="label label-success"
+                                          th:if="${order.status == 'Success' || order.status == 'Completed'}"
+                                          th:text="${order.status}"></span>
+                                    <span class="label label-warning"
+                                          th:if="${order.status == 'Pending'}"
+                                          th:text="${order.status}"></span>
+                                    <span class="label label-info"
+                                          th:if="${order.status == 'Approved' || order.status == 'In Delivery'}"
+                                          th:text="${order.status}"></span>
+                                    <span class="label label-danger"
+                                          th:if="${order.status == 'Cancelled'}"
+                                          th:text="${order.status}"></span>
+                                    <span class="label label-default"
+                                          th:if="${order.status != 'Success' && order.status != 'Completed' && order.status != 'Pending' && order.status != 'Approved' && order.status != 'In Delivery' && order.status != 'Cancelled'}"
+                                          th:text="${order.status}"></span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ========== PAYMENT INFORMATION PANEL (NEW) ========== -->
+                <div class="panel panel-warning" style="margin-top: 20px;">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <i class="fa fa-credit-card"></i> Payment Information
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        <table class="table table-bordered" style="margin-bottom: 0;">
+                            <tbody>
+                            <tr>
+                                <th style="width: 50%; background-color: #f5f5f5;">Payment Method</th>
+                                <td>
+                                    <span class="label label-info"
+                                          th:if="${order.payment_method == 'COD'}"
+                                          th:text="${order.payment_method}"></span>
+                                    <small style="color: #666; margin-left: 10px;"
+                                           th:if="${order.payment_method == 'COD'}">
+                                        (Cash On Delivery)
+                                    </small>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th style="background-color: #f5f5f5;">Payment Status</th>
+                                <td>
+                                    <!-- UNPAID STATUS -->
+                                    <span th:if="${order.payment_status == 'UNPAID'}"
+                                          class="payment-status-badge payment-unpaid">
+                                        <span class="label label-danger">
+                                            <i class="fa fa-times-circle"></i> UNPAID
+                                        </span>
+                                    </span>
+
+                                    <!-- PAID STATUS -->
+                                    <span th:if="${order.payment_status == 'PAID'}"
+                                          class="payment-status-badge payment-paid">
+                                        <span class="label label-success">
+                                            <i class="fa fa-check-circle"></i> PAID
+                                        </span>
+                                    </span>
+                                </td>
+                            </tr>
+
+                            <!-- Payment Note (only if PAID and has note) -->
+                            <tr th:if="${order.payment_status == 'PAID' && order.payment_note != null}"
+                                style="background-color: #d9edf7;">
+                                <th style="background-color: #c9e0ea; vertical-align: top;">Payment Note</th>
+                                <td style="font-style: italic; color: #666;">
+                                    <i class="fa fa-quote-left"></i>
+                                    <span th:text="${order.payment_note}"></span>
+                                    <i class="fa fa-quote-right"></i>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Payment Reminder (if UNPAID and Completed) -->
+                        <div th:if="${order.status == 'Completed' && order.payment_status == 'UNPAID'}"
+                             style="margin-top: 15px; padding: 15px; background-color: #fcf8e3; border-left: 4px solid #f0ad4e; border-radius: 3px;">
+                            <p style="margin: 0; color: #8a6d3b;">
+                                <i class="fa fa-info-circle"></i>
+                                <strong>Payment Required</strong><br>
+                                <small>Please pay <strong
+                                        th:with="finalTotal=${order.total_cost + (order.shipping_fee != null ? order.shipping_fee : 0)}"
+                                        th:text="${#numbers.formatInteger(finalTotal, 1, 'COMMA') + ' VND'}"></strong>
+                                    to the delivery person when you receive your order.</small>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ordered Books Panel - Right Side -->
+            <div class="col-xs-12 col-sm-12 col-md-7 col-lg-7">
+                <div class="panel panel-success">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><i class="fa fa-shopping-cart"></i> Ordered Books</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped table-hover">
+                                <thead>
+                                <tr class="active">
+                                    <th style="text-align: center; width: 5%;">No.</th>
+                                    <th style="width: 30%;">Book Title</th>
+                                    <th style="text-align: center; width: 10%;">Quantity</th>
+                                    <th style="text-align: right; width: 13%;">Unit Price</th>
+                                    <th style="text-align: right; width: 13%;">Subtotal</th>
+                                    <th style="text-align: right; width: 13%;">Discount</th>
+                                    <th style="text-align: right; width: 16%;">Final</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <!-- ✅ DÒNG SẢN PHẨM -->
+                                <tr th:each="detail, iterStat : ${order.orderDetailList}">
+                                    <td style="text-align: center; vertical-align: middle;"
+                                        th:text="${iterStat.index + 1}">1
+                                    </td>
+                                    <td style="vertical-align: middle;">
+                                        <!-- Book Title -->
+                                        <div style="font-weight: 600; color: #333; margin-bottom: 5px;"
+                                             th:text="${detail.book.title}">Book Title
+                                        </div>
+
+                                        <!-- Series Bundle Badge -->
+                                        <div th:if="${detail.isFullSeries != null && detail.isFullSeries && detail.series != null}"
+                                             style="margin-top: 8px;">
+                                            <span style="background: linear-gradient(135deg, #5cb85c 0%, #4cae4c 100%);
+                                                         color: white;
+                                                         padding: 5px 12px;
+                                                         border-radius: 15px;
+                                                         font-size: 11px;
+                                                         font-weight: bold;
+                                                         display: inline-block;">
+                                                <i class="fa fa-book"></i> Series: <span
+                                                    th:text="${detail.series.name}"></span>
+                                            </span>
+                                            <br>
+                                            <small style="color: #5cb85c; font-weight: 600; margin-top: 3px; display: inline-block;">
+                                                <i class="fa fa-tag"></i> 5% Series Bundle Discount Applied
+                                            </small>
+                                        </div>
+
+                                        <!-- Promotion Badge -->
+                                        <div th:if="${detail.promotion != null}" style="margin-top: 8px;">
+                                            <span style="background: linear-gradient(135deg, #f0ad4e 0%, #ec971f 100%);
+                                                         color: white;
+                                                         padding: 5px 12px;
+                                                         border-radius: 15px;
+                                                         font-size: 11px;
+                                                         font-weight: bold;
+                                                         display: inline-block;">
+                                                <i class="fa fa-ticket"></i> <span
+                                                    th:text="${detail.promotion.code}"></span>
+                                            </span>
+                                            <br>
+                                            <small th:text="${detail.promotion.name}"
+                                                   style="color: #f0ad4e; font-weight: 600; margin-top: 3px; display: inline-block;"></small>
+                                        </div>
+                                    </td>
+                                    <td style="text-align: center; vertical-align: middle; font-size: 15px; font-weight: 600;"
+                                        th:text="${detail.number}">1
+                                    </td>
+                                    <td style="text-align: right; vertical-align: middle; font-size: 14px;"
+                                        th:text="${#numbers.formatDecimal(detail.book.price, 1, 'COMMA', 1, 'POINT')} + ' VND'">
+                                        0 VND
+                                    </td>
+                                    <td style="text-align: right; vertical-align: middle; font-size: 14px;"
+                                        th:text="${#numbers.formatDecimal(detail.total_cost, 1, 'COMMA', 1, 'POINT')} + ' VND'">
+                                        0 VND
+                                    </td>
+
+                                    <!-- DISCOUNT COLUMN -->
+                                    <td style="text-align: right; vertical-align: middle;">
+                                        <span th:if="${detail.discountAmount != null && detail.discountAmount > 0}"
+                                              style="color: #d9534f; font-weight: bold; font-size: 14px;"
+                                              th:text="'-' + ${#numbers.formatDecimal(detail.discountAmount, 1, 'COMMA', 1, 'POINT')} + ' VND'">
+                                            -0 VND
+                                        </span>
+                                        <span th:if="${detail.discountAmount == null || detail.discountAmount == 0}"
+                                              style="color: #999;">
+                                            0 VND
+                                        </span>
+                                    </td>
+
+                                    <!-- FINAL COLUMN = (Subtotal - Discount) -->
+                                    <td style="text-align: right; vertical-align: middle;">
+                                        <strong style="color: #5cb85c;"
+                                                th:with="itemFinal=${detail.total_cost - (detail.discountAmount != null ? detail.discountAmount : 0)}"
+                                                th:text="${#numbers.formatDecimal(itemFinal, 1, 'COMMA', 1, 'POINT')} + ' VND'"></strong>
+                                    </td>
+                                </tr>
+
+                                <tr style="background-color: #f5f5f5; font-weight: bold;">
+                                    <td colspan="5" style="text-align: right; padding-right: 15px; font-size: 14px;">
+                                        <i class="fa fa-truck"></i> Shipping Fee:
+                                    </td>
+                                    <td colspan="2" style="text-align: right; padding-right: 15px;">
+                                        <span style="color: #0275d8; font-weight: bold; font-size: 14px;"
+                                              th:text="${#numbers.formatDecimal(order.shipping_fee != null ? order.shipping_fee : 0, 1, 'COMMA', 1, 'POINT')} + ' VND'"></span>
+                                    </td>
+                                </tr>
+
+                                <tr style="background-color: #f5f5f5; font-weight: bold;">
+                                    <td colspan="5" style="text-align: right; padding-right: 15px; font-size: 14px;">
+                                        Items Subtotal:
+                                    </td>
+                                    <td colspan="2" style="text-align: right; padding-right: 15px;">
+                                        <span style="color: #333; font-size: 14px;"
+                                              th:text="${#numbers.formatDecimal(order.total_cost, 1, 'COMMA', 1, 'POINT')} + ' VND'"></span>
+                                    </td>
+                                </tr>
+
+                                <tr style="background-color: #d9edf7; font-weight: bold; border-top: 2px solid #5cb85c;">
+                                    <td colspan="5" style="text-align: right; padding-right: 15px;">
+                                        <span style="color: #5cb85c; font-size: 16px;"><i class="fa fa-calculator"></i> TOTAL PAYABLE:</span>
+                                    </td>
+                                    <td colspan="2" style="text-align: right; padding-right: 15px;">
+                                        <strong style="color: #5cb85c; font-size: 16px;"
+                                                th:with="finalTotal=${order.total_cost + (order.shipping_fee != null ? order.shipping_fee : 0)}"
+                                                th:text="${#numbers.formatDecimal(finalTotal, 1, 'COMMA', 1, 'POINT')} + ' VND'"></strong>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-center" style="margin-top: 20px;">
+                <a th:href="@{/orders}" class="btn btn-primary btn-lg">
+                    <i class="fa fa-list"></i> View All Orders
+                </a>
+                <a th:href="@{/products}" class="btn btn-success btn-lg">
+                    <i class="fa fa-shopping-cart"></i> Continue Shopping
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer id="tg-footer" class="tg-footer tg-haslayout">
+    <div class="tg-footerarea">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="tg-clientservices">
+                        <li class="tg-devlivery">
+                            <span class="tg-clientserviceicon"><i class="icon-rocket"></i></span>
+                            <div class="tg-titlesubtitle">
+                                <h3>Delivery</h3>
+                                <p>Fast nationwide delivery</p>
+                            </div>
+                        </li>
+                        <li class="tg-discount">
+                            <span class="tg-clientserviceicon"><i class="icon-tag"></i></span>
+                            <div class="tg-titlesubtitle">
+                                <h3>Pricing</h3>
+                                <p>Attractive and reasonable</p>
+                            </div>
+                        </li>
+                        <li class="tg-quality">
+                            <span class="tg-clientserviceicon"><i class="icon-leaf"></i></span>
+                            <div class="tg-titlesubtitle">
+                                <h3>Quality</h3>
+                                <p>Top quality guaranteed</p>
+                            </div>
+                        </li>
+                        <li class="tg-support">
+                            <span class="tg-clientserviceicon"><i class="icon-heart"></i></span>
+                            <div class="tg-titlesubtitle">
+                                <h3>Support 24/7</h3>
+                                <p>Available at all times</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="tg-threecolumns">
+                    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                        <div class="tg-footercol">
+                            <strong class="tg-logo"><a href="javascript:void(0);"><img src="../images/flogo.png"
+                                                                                       alt="image description"></a></strong>
+                            <ul class="tg-contactinfo">
+                                <li>
+                                    <i class="icon-apartment"></i>
+                                    <address>Ha Dong, Hanoi, Vietnam</address>
+                                </li>
+                                <li>
+                                    <i class="icon-phone-handset"></i>
+                                    <span>
+											<em>0812 567 889</em>
+											<em>+84 1245 6767</em>
+										</span>
+                                </li>
+                                <li>
+                                    <i class="icon-clock"></i>
+                                    <span>
+											Serving 7 days a week from 9:00 - 22:00
+										</span>
+                                </li>
+                            </ul>
+                            <ul class="tg-socialicons">
+                                <li class="tg-facebook"><a href="javascript:void(0);"><i class="fa fa-facebook"></i></a>
+                                </li>
+                                <li class="tg-twitter"><a href="javascript:void(0);"><i class="fa fa-twitter"></i></a>
+                                </li>
+                                <li class="tg-linkedin"><a href="javascript:void(0);"><i class="fa fa-linkedin"></i></a>
+                                </li>
+                                <li class="tg-googleplus"><a href="javascript:void(0);"><i
+                                        class="fa fa-google-plus"></i></a></li>
+                                <li class="tg-rss"><a href="javascript:void(0);"><i class="fa fa-rss"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                        <div class="tg-footercol tg-widget tg-widgetnavigation">
+                            <div class="tg-widgettitle">
+                                <h3>We guarantee</h3>
+                            </div>
+                            <div class="tg-widgetcontent">
+                                <ul>
+                                    <li><a href="javascript:void(0);">Always respect customers</a></li>
+                                    <li><a href="javascript:void(0);">Protect necessary information</a></li>
+                                    <li><a href="javascript:void(0);">Genuine books</a></li>
+                                    <li><a href="javascript:void(0);">Comply with buying and selling regulations</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tg-footerbar">
+        <a id="tg-btnbacktotop" class="tg-btnbacktotop" href="javascript:void(0);"><i class="icon-chevron-up"></i></a>
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <span class="tg-paymenttype"><img src="../images/paymenticon.png" alt="image description"></span>
+                    <span class="tg-copyright">2023 All Rights Reserved By &copy; Book Library</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="../js/vendor/jquery-library.js"></script>
+<script src="../js/vendor/bootstrap.min.js"></script>
+<script src="../js/owl.carousel.min.js"></script>
+<script src="../js/jquery.vide.min.js"></script>
+<script src="../js/countdown.js"></script>
+<script src="../js/jquery-ui.js"></script>
+<script src="../js/parallax.js"></script>
+<script src="../js/countTo.js"></script>
+<script src="../js/appear.js"></script>
+<script src="../js/gmap3.js"></script>
+<script src="../js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // Success message after order placement
+    Swal.fire({
+        position: 'top',
+        icon: 'success',
+        title: 'Order placed successfully!<br>Please track your order',
+        showConfirmButton: false,
+        timer: 2000,
+    });
+</script>
+</body>
+</html>

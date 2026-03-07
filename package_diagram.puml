@@ -1,0 +1,19 @@
+@startuml Package Diagram
+
+package config
+
+package controller
+
+package service
+
+package repository
+
+package entity
+
+' Relationships
+controller ..> service : uses
+service ..> repository : uses
+repository ..> entity : uses
+config ..> service : uses
+
+@enduml

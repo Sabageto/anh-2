@@ -1,0 +1,638 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Book Library | Statistics - Admin</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/normalize.css">
+    <link rel="stylesheet" href="../css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/icomoon.css">
+    <link rel="stylesheet" href="../css/jquery-ui.css">
+    <link rel="stylesheet" href="../css/owl.carousel.css">
+    <link rel="stylesheet" href="../css/transitions.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/color.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <script src="../js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
+    <style>
+        .stat-card {
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2ecc71;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-bottom: 30px;
+        }
+
+        .summary-cards {
+            margin-bottom: 30px;
+        }
+
+        .revenue-tabs {
+            margin-bottom: 20px;
+        }
+
+        .revenue-tabs button {
+            margin-right: 10px;
+            padding: 10px 20px;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .revenue-tabs button.active {
+            background: #2ecc71;
+            color: white;
+            border-color: #2ecc71;
+        }
+
+        .no-data-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="tg-wrapper" class="tg-wrapper tg-haslayout">
+    <header id="tg-header" class="tg-header tg-haslayout">
+        <div class="tg-topbar">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <div class="tg-userlogin">
+                            <div>
+                                <li style="list-style:none ;" class="menu-item-has-children"
+                                    sec:authorize="isAuthenticated()">
+                                    <a href=""> <i id="user_icon" class="fa fa-user"></i> Welcome <span
+                                            class="sr-only"></span></a>
+                                    <div class="mega-menu user">
+                                        <ul class="tg-themetabnav " role="tablist">
+                                            <li><a th:href="@{/profile}">Profile<span
+                                                    class="sr-only">(current)</span></a></li>
+                                            <li><a th:href="@{/orders}" sec:authorize="hasRole('USER')">Order
+                                                Information<span class="sr-only">(current)</span></a></li>
+                                            <li><a class="tg-userlogout" th:href="@{/logout}">Logout<span
+                                                    class="sr-only">(current)</span></a></li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <br>
+                                <a class="nav-link text" th:href="@{/signup}" style="margin-right: 30px"
+                                   sec:authorize="!isAuthenticated()">
+                                    Sign up<span class="sr-only">(current)</span></a>
+                                <a class="nav-link text" th:href="@{/login}" sec:authorize="!isAuthenticated()">
+                                    Login<span class="sr-only">(current)</span></a>
+                            </div>
+                        </div>
+                        <div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tg-middlecontainer" style="padding: 10px;">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <strong class="tg-logo"><a href="index-2.html"><img src="images/logo.png"
+                                                                            alt="company name here"></a></strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tg-navigationarea">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <nav id="tg-nav" class="tg-nav">
+                            <div class="navbar-header">
+                                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                                        data-target="#tg-navigation" aria-expanded="false">
+                                    <span class="sr-only">Toggle navigation</span>
+                                    <span class="icon-bar"></span>
+                                    <span class="icon-bar"></span>
+                                    <span class="icon-bar"></span>
+                                </button>
+                            </div>
+                            <div id="tg-navigation" class="collapse navbar-collapse tg-navigation">
+                                <ul>
+                                    <li><a th:href="@{/}">Home</a></li>
+                                    <li><a th:href="@{/products}" sec:authorize="!hasRole('ADMIN')">Books</a></li>
+                                    <li><a th:href="@{/manage-product}" sec:authorize="hasRole('ADMIN')">Books</a></li>
+                                    <li><a th:href="@{/manage-category}" sec:authorize="hasRole('ADMIN')">Categories</a>
+                                    </li>
+                                    <li><a th:href="@{/manage-author}" sec:authorize="hasRole('ADMIN')">Authors</a></li>
+                                    <li><a th:href="@{/manage-user}" sec:authorize="hasRole('ADMIN')">Users</a></li>
+                                    <li><a th:href="@{/manage-order}" sec:authorize="hasRole('ADMIN')">Orders</a></li>
+                                    <li><a th:href="@{/manage-promotion}"
+                                           sec:authorize="hasRole('ADMIN')">Promotions</a></li>
+                                    <li><a th:href="@{/statistic}" sec:authorize="hasRole('ADMIN')">Statistics</a></li>
+                                </ul>
+                            </div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="tg-innerbanner tg-haslayout tg-parallax tg-bginnerbanner" data-z-index="-100"
+         data-appear-top-offset="600" data-parallax="scroll" data-image-src="images/parallax/bgparallax-07.jpg">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <div class="tg-innerbannercontent">
+                        <h1>Statistics Dashboard</h1>
+                        <ol class="tg-breadcrumb">
+                            <li><a href="javascript:void(0);">Home</a></li>
+                            <li class="tg-active">Statistics</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <main id="tg-main" class="tg-main tg-haslayout">
+        <div class="tg-sectionspace tg-haslayout">
+            <div class="container">
+                <!-- Summary Cards -->
+                <div class="row summary-cards">
+                    <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                        <div class="stat-card">
+                            <h3>Total Revenue</h3>
+                            <div class="stat-number" id="totalRevenueDisplay">0 VND</div>
+                            <div class="stat-label">All-time earnings</div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                        <div class="stat-card">
+                            <h3>Total Orders</h3>
+                            <div class="stat-number" th:text="${totalOrders}">0</div>
+                            <div class="stat-label">All orders placed</div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                        <div class="stat-card">
+                            <h3>Books Sold</h3>
+                            <div class="stat-number" th:text="${totalBooksSold}">0</div>
+                            <div class="stat-label">Total books delivered</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Revenue Statistics -->
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
+                        <div class="stat-card">
+                            <h3>Revenue Statistics</h3>
+                            <div class="revenue-tabs">
+                                <button class="revenue-tab active" data-period="weekly">Weekly</button>
+                                <button class="revenue-tab" data-period="monthly">Monthly</button>
+                                <button class="revenue-tab" data-period="yearly">Yearly</button>
+                            </div>
+                            <div class="chart-container">
+                                <div id="revenueChartContainer">
+                                    <canvas id="revenueChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Order Status -->
+                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                        <div class="stat-card">
+                            <h3>Order Status</h3>
+                            <div class="chart-container" style="height: 300px;">
+                                <div id="orderStatusChartContainer">
+                                    <canvas id="orderStatusChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Selling Books -->
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <div class="stat-card">
+                            <h3>Top 10 Best Selling Books</h3>
+                            <div class="chart-container">
+                                <div id="topBooksChartContainer">
+                                    <canvas id="topBooksChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer id="tg-footer" class="tg-footer tg-haslayout">
+        <div class="tg-footerarea">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <ul class="tg-clientservices">
+                            <li class="tg-devlivery">
+                                <span class="tg-clientserviceicon"><i class="icon-rocket"></i></span>
+                                <div class="tg-titlesubtitle">
+                                    <h3>Delivery </h3>
+                                    <p>Fast nationwide delivery</p>
+                                </div>
+                            </li>
+                            <li class="tg-discount">
+                                <span class="tg-clientserviceicon"><i class="icon-tag"></i></span>
+                                <div class="tg-titlesubtitle">
+                                    <h3>Price</h3>
+                                    <p>Attractive and reasonable</p>
+                                </div>
+                            </li>
+                            <li class="tg-quality">
+                                <span class="tg-clientserviceicon"><i class="icon-leaf"></i></span>
+                                <div class="tg-titlesubtitle">
+                                    <h3>Quality</h3>
+                                    <p>Top quality products</p>
+                                </div>
+                            </li>
+                            <li class="tg-support">
+                                <span class="tg-clientserviceicon"><i class="icon-heart"></i></span>
+                                <div class="tg-titlesubtitle">
+                                    <h3>24/7 Support</h3>
+                                    <p>Service at any time</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="tg-threecolumns">
+                        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                            <div class="tg-footercol">
+                                <strong class="tg-logo"><a href="javascript:void(0);"><img src="../images/flogo.png"
+                                                                                           alt="image description"></a></strong>
+                                <ul class="tg-contactinfo">
+                                    <li>
+                                        <i class="icon-apartment"></i>
+                                        <address>Ha Dong, Hanoi, Vietnam</address>
+                                    </li>
+                                    <li>
+                                        <i class="icon-phone-handset"></i>
+                                        <span>
+												<em>0812 567 889</em>
+												<em>+84 1245 6767</em>
+											</span>
+                                    </li>
+                                    <li>
+                                        <i class="icon-clock"></i>
+                                        <span>Serving 7 days a week from 9:00 - 22:00</span>
+                                    </li>
+                                    <li>
+                                        <i class="icon-envelope"></i>
+                                        <span>
+												<em><a href="mailto:support@booklibrary.com">support@booklibrary.com</a></em>
+												<em><a href="mailto:info@booklibrary.com">info@booklibrary.com</a></em>
+											</span>
+                                    </li>
+                                </ul>
+                                <ul class="tg-socialicons">
+                                    <li class="tg-facebook"><a href="javascript:void(0);"><i class="fa fa-facebook"></i></a>
+                                    </li>
+                                    <li class="tg-twitter"><a href="javascript:void(0);"><i
+                                            class="fa fa-twitter"></i></a></li>
+                                    <li class="tg-linkedin"><a href="javascript:void(0);"><i class="fa fa-linkedin"></i></a>
+                                    </li>
+                                    <li class="tg-googleplus"><a href="javascript:void(0);"><i
+                                            class="fa fa-google-plus"></i></a></li>
+                                    <li class="tg-rss"><a href="javascript:void(0);"><i class="fa fa-rss"></i></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                            <div class="tg-footercol tg-widget tg-widgetnavigation">
+                                <div class="tg-widgettitle">
+                                    <h3>We guarantee</h3>
+                                </div>
+                                <div class="tg-widgetcontent">
+                                    <ul>
+                                        <li><a href="javascript:void(0);">Always respect customers</a></li>
+                                        <li><a href="javascript:void(0);">Confidentiality of necessary information</a>
+                                        </li>
+                                        <li><a href="javascript:void(0);">Genuine books</a></li>
+                                        <li><a href="javascript:void(0);">Comply with buying and selling regulations</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tg-footerbar">
+            <a id="tg-btnbacktotop" class="tg-btnbacktotop" href="javascript:void(0);"><i
+                    class="icon-chevron-up"></i></a>
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <span class="tg-paymenttype"><img src="../images/paymenticon.png"
+                                                          alt="image description"></span>
+                        <span class="tg-copyright">2023 All Rights Reserved By &copy; Book Library</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>
+
+<script src="../js/vendor/jquery-library.js"></script>
+<script src="../js/vendor/bootstrap.min.js"></script>
+<script src="../js/owl.carousel.min.js"></script>
+<script src="../js/jquery.vide.min.js"></script>
+<script src="../js/countdown.js"></script>
+<script src="../js/jquery-ui.js"></script>
+<script src="../js/parallax.js"></script>
+<script src="../js/countTo.js"></script>
+<script src="../js/appear.js"></script>
+<script src="../js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+
+<script th:inline="javascript">
+    // Data from Thymeleaf
+    const weeklyRevenueData = /*[[${weeklyRevenue}]]*/ {};
+    const monthlyRevenueData = /*[[${monthlyRevenue}]]*/ {};
+    const yearlyRevenueData = /*[[${yearlyRevenue}]]*/ {};
+    const orderStatsData = /*[[${orderStats}]]*/ {};
+    const topBooksData = /*[[${topBooks}]]*/ {};
+    const totalRevenue = /*[[${totalRevenue}]]*/ 0;
+
+    // Format currency function
+    function formatCurrency(value) {
+        if (!value || value === 0) return "0 VND";
+        return new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(value);
+    }
+
+    // Display total revenue with formatting
+    document.getElementById('totalRevenueDisplay').textContent = formatCurrency(totalRevenue);
+
+    // Helper function to check if data is empty
+    function isDataEmpty(data) {
+        return !data || Object.keys(data).length === 0 ||
+               Object.values(data).every(v => v === 0 || v === null || v === undefined);
+    }
+
+    // Revenue Chart with dynamic data
+    let revenueChart;
+
+    function createRevenueChart(labels, data, label) {
+        if (revenueChart) {
+            revenueChart.destroy();
+        }
+
+        const revenueContainer = document.getElementById('revenueChartContainer');
+
+        // Check if data has any non-zero values
+        const hasData = Object.values(data).some(v => v > 0);
+
+        if (!hasData) {
+            revenueContainer.innerHTML = '<div class="no-data-message">No revenue data available for this period</div>';
+            return;
+        }
+
+        revenueContainer.innerHTML = '<canvas id="revenueChart"></canvas>';
+        const canvas = document.getElementById('revenueChart');
+        const ctx = canvas.getContext('2d');
+
+        revenueChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: label,
+                    data: Object.values(data),
+                    borderColor: '#2ecc71',
+                    backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 5,
+                    pointBackgroundColor: '#2ecc71',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            boxWidth: 12,
+                            padding: 15,
+                            font: {
+                                size: 12
+                            }
+                        }
+                    },
+                    title: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return formatCurrency(context.parsed.y);
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function (value) {
+                                if (value >= 1000000) {
+                                    return (value / 1000000).toFixed(0) + 'M';
+                                } else if (value >= 1000) {
+                                    return (value / 1000).toFixed(0) + 'K';
+                                }
+                                return value;
+                            },
+                            font: {
+                                size: 10
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Initialize with weekly data
+    const weeklyLabels = Object.keys(weeklyRevenueData);
+    createRevenueChart(
+        weeklyLabels,
+        weeklyRevenueData,
+        'Weekly Revenue (VND)'
+    );
+
+    // Tab switching
+    document.querySelectorAll('.revenue-tab').forEach(tab => {
+        tab.addEventListener('click', function () {
+            document.querySelectorAll('.revenue-tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+
+            const period = this.dataset.period;
+            if (period === 'weekly') {
+                createRevenueChart(
+                    Object.keys(weeklyRevenueData),
+                    weeklyRevenueData,
+                    'Weekly Revenue (VND)'
+                );
+            } else if (period === 'monthly') {
+                createRevenueChart(
+                    Object.keys(monthlyRevenueData),
+                    monthlyRevenueData,
+                    'Monthly Revenue (VND)'
+                );
+            } else if (period === 'yearly') {
+                createRevenueChart(
+                    Object.keys(yearlyRevenueData),
+                    yearlyRevenueData,
+                    'Yearly Revenue (VND)'
+                );
+            }
+        });
+    });
+
+    // Order Status Pie Chart with null check
+    const orderStatusContainer = document.getElementById('orderStatusChartContainer');
+    if (!isDataEmpty(orderStatsData)) {
+        const orderStatusCtx = document.getElementById('orderStatusChart').getContext('2d');
+        new Chart(orderStatusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(orderStatsData),
+                datasets: [{
+                    data: Object.values(orderStatsData),
+                    backgroundColor: [
+                        '#f39c12',
+                        '#3498db',
+                        '#2ecc71',
+                        '#e74c3c',
+                        '#9b59b6',
+                        '#1abc9c',
+                        '#34495e'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            boxWidth: 12,
+                            padding: 10,
+                            font: {
+                                size: 11
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    } else {
+        orderStatusContainer.innerHTML = '<div class="no-data-message">No order data available</div>';
+    }
+
+    // Top Books Chart with null check
+    const topBooksContainer = document.getElementById('topBooksChartContainer');
+    if (!isDataEmpty(topBooksData)) {
+        const topBooksCtx = document.getElementById('topBooksChart').getContext('2d');
+        new Chart(topBooksCtx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(topBooksData),
+                datasets: [{
+                    label: 'Books Sold',
+                    data: Object.values(topBooksData),
+                    backgroundColor: '#3498db',
+                    borderColor: '#2980b9',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+    } else {
+        topBooksContainer.innerHTML = '<div class="no-data-message">No sales data available</div>';
+    }
+</script>
+</body>
+</html>

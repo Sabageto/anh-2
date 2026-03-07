@@ -1,0 +1,784 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Book Library | Manage Staff - Admin</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/normalize.css">
+    <link rel="stylesheet" href="../css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/icomoon.css">
+    <link rel="stylesheet" href="../css/jquery-ui.css">
+    <link rel="stylesheet" href="../css/owl.carousel.css">
+    <link rel="stylesheet" href="../css/transitions.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/color.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="../js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
+    <style>
+        .modal-body .form-group { margin-bottom: 15px; }
+        .modal-body label { font-weight: bold; display: block; margin-bottom: 5px; }
+        .modal-body input, .modal-body textarea {
+            width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;
+        }
+        .modal-body textarea { resize: vertical; min-height: 60px; }
+        .form-error { color: #d9534f; font-size: 12px; margin-top: 5px; }
+
+        .otp-container {
+            display: flex !important;
+            justify-content: center !important;
+            gap: 10px !important;
+            margin: 20px 0 !important;
+        }
+        .otp-input {
+            width: 50px !important;
+            height: 50px !important;
+            text-align: center !important;
+            font-size: 24px !important;
+            font-weight: bold !important;
+            border: 2px solid #ddd !important;
+            border-radius: 8px !important;
+            transition: all 0.3s !important;
+        }
+        .otp-input:focus {
+            border-color: #667eea !important;
+            outline: none !important;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+        }
+        .otp-timer { text-align: center; color: #666; font-size: 14px; margin-top: 10px; }
+        .otp-timer.expired { color: #d9534f; }
+        .resend-otp { color: #667eea; cursor: pointer; text-decoration: underline; }
+        .resend-otp:hover { color: #764ba2; }
+        .resend-otp.disabled { color: #ccc; cursor: not-allowed; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<header id="tg-header" class="tg-header tg-haslayout">
+    <div class="tg-topbar">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <div class="tg-userlogin">
+                        <div>
+                            <li style="list-style:none;" class="menu-item-has-children"
+                                sec:authorize="isAuthenticated()">
+                                <a href=""><i id="user_icon" class="fa fa-user"></i> Welcome <span
+                                        class="sr-only"></span></a>
+                                <div class="mega-menu user">
+                                    <ul class="tg-themetabnav" role="tablist">
+                                        <li><a th:href="@{/profile}">Profile<span class="sr-only">(current)</span></a>
+                                        </li>
+                                        <li><a th:href="@{/orders}" sec:authorize="hasRole('USER')">Orders<span
+                                                class="sr-only">(current)</span></a></li>
+                                        <li><a class="tg-userlogout" th:href="@{/logout}">Logout<span class="sr-only">(current)</span></a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                            <br>
+                            <a class="nav-link text" th:href="@{/signup}" style="margin-right: 30px"
+                               sec:authorize="!isAuthenticated()">
+                                Sign up<span class="sr-only">(current)</span></a>
+                            <a class="nav-link text" th:href="@{/login}" sec:authorize="!isAuthenticated()">
+                                Login<span class="sr-only">(current)</span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tg-middlecontainer" style="padding: 10px;">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <strong class="tg-logo"><a href="index-2.html"><img src="images/logo.png"
+                                                                        alt="company name here"></a></strong>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tg-navigationarea">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <nav id="tg-nav" class="tg-nav">
+                        <div class="navbar-header">
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                                    data-target="#tg-navigation" aria-expanded="false">
+                                <span class="sr-only">Toggle navigation</span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                        </div>
+                        <div id="tg-navigation" class="collapse navbar-collapse tg-navigation">
+                            <ul>
+                                <li><a th:href="@{/}">Home</a></li>
+                                <li><a th:href="@{/products}" sec:authorize="!hasRole('ADMIN')">Books</a></li>
+                                <li><a th:href="@{/manage-product}" sec:authorize="hasRole('ADMIN')">Books</a></li>
+                                <li><a th:href="@{/manage-category}" sec:authorize="hasRole('ADMIN')">Categories</a>
+                                </li>
+                                <li><a th:href="@{/manage-author}" sec:authorize="hasRole('ADMIN')">Authors</a></li>
+                                <li><a th:href="@{/manage-user}" sec:authorize="hasRole('ADMIN')">Users</a></li>
+                                <li><a th:href="@{/manage-staff}" sec:authorize="hasRole('ADMIN')">Staff</a></li>
+                                <li><a th:href="@{/manage-order}" sec:authorize="hasRole('ADMIN')">Orders</a></li>
+                                <li><a th:href="@{/manage-promotion}" sec:authorize="hasRole('ADMIN')">Promotions</a>
+                                </li>
+                                <li><a th:href="@{/statistic}" sec:authorize="hasRole('ADMIN')">Statistics</a></li>
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="tg-innerbanner tg-haslayout tg-parallax tg-bginnerbanner" data-z-index="-100" data-appear-top-offset="600"
+     data-parallax="scroll" data-image-src="../images/parallax/bgparallax-07.jpg">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="tg-innerbannercontent">
+                    <h1 style="margin-bottom: 20px;">Manage Staff</h1>
+                    <ol class="tg-breadcrumb">
+                        <li><a href="javascript:void(0);">Home</a></li>
+                        <li class="tg-active">Staff</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<main id="tg-main" class="tg-main tg-haslayout">
+    <div class="tg-sectionspace tg-haslayout" style="padding-top: 50px;">
+        <div class="container">
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible" role="alert"
+                 style="margin-bottom: 20px;">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <span th:text="${errorMessage}"></span>
+            </div>
+
+            <div style="margin-bottom: 10px; text-align: left;">
+                <button type="button" class="btn btn-success" id="addStaffBtn">
+                    <i class="fa fa-plus"></i> Add New Staff
+                </button>
+            </div>
+
+            <div class="row">
+                <div>
+                    <div>
+                        <div id="tg-content" class="tg-content">
+                            <div class="tg-products">
+                                <div class="tg-productgrid">
+                                    <div class="row">
+                                        <table class="table table-bordered">
+                                            <tr>
+                                                <th>No.</th>
+                                                <th>Full name</th>
+                                                <th>Phone</th>
+                                                <th>Email</th>
+                                                <th>Address</th>
+                                                <th>Active Orders</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                            <tr th:each="staff, iterStat : ${staffList}" class="active-row">
+                                                <td th:text="${iterStat.count}"></td>
+
+                                                <td th:text="${staff.name}"></td>
+                                                <td th:text="${staff.phone}"></td>
+                                                <td th:text="${staff.account.email}"></td>
+                                                <td th:text="${staff.address}"></td>
+                                                <td th:text="${activeOrdersMap[staff.id]}"></td>
+                                                <td>
+                                                    <a th:href="@{|/admin/edit-staff?id=${staff.id}|}">
+                                                        <button type="button" class="btn btn-warning">View</button>
+                                                    </a>
+                                                    <button type="button" class="btn btn-danger" data-toggle="modal"
+                                                            th:data-target="${'#myModal_delete_staff' + staff.id}"
+                                                            th:disabled="${activeOrdersMap[staff.id] > 0}">
+                                                        Delete
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+
+                                    <tr th:each="staff: ${staffList}">
+                                        <div class="modal fade" th:id="${'myModal_delete_staff' + staff.id}"
+                                             tabindex="-1" role="dialog"
+                                             th:attr="aria-labelledby=${'myModalDeleteStaffLabel' + staff.id}">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <button type="button" class="close" data-dismiss="modal"
+                                                                aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                        <h4 th:if="${activeOrdersMap[staff.id] == 0}"
+                                                            class="modal-title"
+                                                            th:id="${'myModalDeleteStaffLabel' + staff.id}"
+                                                            style="text-transform: none;">
+                                                            Are you sure you want to delete this staff member?</h4>
+                                                        <h4 th:if="${activeOrdersMap[staff.id] > 0}" class="modal-title"
+                                                            th:id="${'myModalDeleteStaffLabel' + staff.id}"
+                                                            style="text-transform: none;">
+                                                            Cannot delete a staff member with active orders</h4>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <button th:if="${activeOrdersMap[staff.id] > 0}" type="button"
+                                                                class="btn btn-default" data-dismiss="modal">OK
+                                                        </button>
+                                                        <button th:if="${activeOrdersMap[staff.id] == 0}" type="button"
+                                                                class="btn btn-default" data-dismiss="modal">Cancel
+                                                        </button>
+                                                        <a th:if="${activeOrdersMap[staff.id] == 0}"
+                                                           th:href="@{|/admin/delete-staff?id=${staff.id}|}">
+                                                            <button type="submit" class="btn btn-primary">Confirm
+                                                            </button>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </tr>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <nav aria-label="Page navigation" style="text-align: center;">
+            <ul class="pagination">
+                <li th:classappend="${page == 1} ? 'disabled'">
+                    <a th:if="${page > 1}" th:href="@{/manage-staff(page=${page - 1})}">&laquo;</a>
+                    <span th:if="${page == 1}">&laquo;</span>
+                </li>
+                <li th:each="i : ${#numbers.sequence(1, totalPage)}" th:classappend="${i == page} ? 'active'">
+                    <a th:href="@{/manage-staff(page=${i})}" th:text="${i}"></a>
+                </li>
+                <li th:classappend="${page == totalPage} ? 'disabled'">
+                    <a th:if="${page < totalPage}" th:href="@{/manage-staff(page=${page + 1})}">&raquo;</a>
+                    <span th:if="${page == totalPage}">&raquo;</span>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</main>
+
+<!-- Create Staff Modal -->
+<div class="modal fade" id="createStaffModal" tabindex="-1" role="dialog" aria-labelledby="createStaffModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="createStaffModalLabel" style="text-transform: none;">Add New Staff
+                    Member</h4>
+            </div>
+
+            <!-- Step 1: Staff Information Form -->
+            <div id="staffInfoForm">
+                <form id="createStaffForm">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="staff_name">Full Name <span style="color: red;">*</span></label>
+                            <input type="text" class="form-control" id="staff_name" name="name"
+                                   placeholder="Enter full name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="staff_username">Username <span style="color: red;">*</span></label>
+                            <input type="text" class="form-control" id="staff_username" name="username"
+                                   placeholder="Enter username (3-20 characters)" required>
+                            <small class="form-text text-muted">Letters, numbers, and underscore only</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="staff_email">Email <span style="color: red;">*</span></label>
+                            <input type="email" class="form-control" id="staff_email" name="email"
+                                   placeholder="Enter email address" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="staff_phone">Phone Number <span style="color: red;">*</span></label>
+                            <input type="text" class="form-control" id="staff_phone" name="phone"
+                                   placeholder="Enter phone (10 digits starting with 0)" pattern="0\d{9}" required>
+                            <small class="form-text text-muted">Format: 0xxxxxxxxx (10 digits)</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="staff_address">Address <span style="color: red;">*</span></label>
+                            <textarea class="form-control" id="staff_address" name="address"
+                                      placeholder="Enter address (5-255 characters)" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="staff_password">Password <span style="color: red;">*</span></label>
+                            <input type="password" class="form-control" id="staff_password" name="password"
+                                   placeholder="Enter password (6-20 characters)" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="staff_confirmPassword">Confirm Password <span
+                                    style="color: red;">*</span></label>
+                            <input type="password" class="form-control" id="staff_confirmPassword"
+                                   name="confirmPassword"
+                                   placeholder="Re-enter password" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="sendOtpBtn">Save</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Step 2: OTP Verification Form -->
+            <div id="otpVerificationForm" style="display: none;">
+                <div class="modal-body">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <i class="fa fa-envelope" style="font-size: 48px; color: #667eea;"></i>
+                        <h4 style="margin-top: 15px;">Verify Your Email</h4>
+                        <p>We've sent a 6-digit code to <strong id="otpEmailDisplay"></strong></p>
+                    </div>
+
+                    <div class="otp-container" id="otpContainer">
+                        <!-- OTP inputs will be created here by JavaScript -->
+                    </div>
+
+                    <div class="otp-timer">
+                        Code expires in: <span id="otpCountdown">5:00</span>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 15px;">
+                        <p>Didn't receive the code?
+                            <a href="javascript:void(0);" class="resend-otp disabled" id="resendOtpLink">Resend OTP</a>
+                        </p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" id="backToFormBtn">Back</button>
+                    <button type="button" class="btn btn-primary" id="verifyOtpBtn">Verify & Create</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer id="tg-footer" class="tg-footer tg-haslayout">
+    <div class="tg-footerarea">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="tg-clientservices">
+                        <li class="tg-devlivery">
+                            <span class="tg-clientserviceicon"><i class="icon-rocket"></i></span>
+                            <div class="tg-titlesubtitle">
+                                <h3>Shipping</h3>
+                                <p>Fast nationwide delivery</p>
+                            </div>
+                        </li>
+                        <li class="tg-discount">
+                            <span class="tg-clientserviceicon"><i class="icon-tag"></i></span>
+                            <div class="tg-titlesubtitle">
+                                <h3>Pricing</h3>
+                                <p>Attractive and reasonable</p>
+                            </div>
+                        </li>
+                        <li class="tg-quality">
+                            <span class="tg-clientserviceicon"><i class="icon-leaf"></i></span>
+                            <div class="tg-titlesubtitle">
+                                <h3>Quality</h3>
+                                <p>Top quality products</p>
+                            </div>
+                        </li>
+                        <li class="tg-support">
+                            <span class="tg-clientserviceicon"><i class="icon-heart"></i></span>
+                            <div class="tg-titlesubtitle">
+                                <h3>Support 24/7</h3>
+                                <p>Service at any time</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="tg-threecolumns">
+                    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                        <div class="tg-footercol">
+                            <strong class="tg-logo"><a href="javascript:void(0);"><img src="../images/flogo.png"
+                                                                                       alt="image description"></a></strong>
+                            <ul class="tg-contactinfo">
+                                <li><i class="icon-apartment"></i>
+                                    <address>Ha Dong, Hanoi, Vietnam</address>
+                                </li>
+                                <li><i class="icon-phone-handset"></i><span><em>0812 567 889</em><em>+84 1245 6767</em></span>
+                                </li>
+                                <li><i class="icon-clock"></i><span>Serving 7 days a week from 9:00 - 22:00</span></li>
+                                <li>
+                                    <i class="icon-envelope"></i>
+                                    <span>
+                                        <em><a href="mailto:support@domain.com">support@booklibrary.com</a></em>
+                                        <em><a href="mailto:info@domain.com">info@booklibrary.com</a></em>
+                                    </span>
+                                </li>
+                            </ul>
+                            <ul class="tg-socialicons">
+                                <li class="tg-facebook"><a href="javascript:void(0);"><i class="fa fa-facebook"></i></a>
+                                </li>
+                                <li class="tg-twitter"><a href="javascript:void(0);"><i class="fa fa-twitter"></i></a>
+                                </li>
+                                <li class="tg-linkedin"><a href="javascript:void(0);"><i class="fa fa-linkedin"></i></a>
+                                </li>
+                                <li class="tg-googleplus"><a href="javascript:void(0);"><i
+                                        class="fa fa-google-plus"></i></a></li>
+                                <li class="tg-rss"><a href="javascript:void(0);"><i class="fa fa-rss"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                        <div class="tg-footercol tg-widget tg-widgetnavigation">
+                            <div class="tg-widgettitle"><h3>We guarantee</h3></div>
+                            <div class="tg-widgetcontent">
+                                <ul>
+                                    <li><a href="javascript:void(0);">Always respect customers</a></li>
+                                    <li><a href="javascript:void(0);">Protect necessary information</a></li>
+                                    <li><a href="javascript:void(0);">Genuine books</a></li>
+                                    <li><a href="javascript:void(0);">Comply with buying and selling regulations</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tg-footerbar">
+        <a id="tg-btnbacktotop" class="tg-btnbacktotop" href="javascript:void(0);"><i class="icon-chevron-up"></i></a>
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <span class="tg-paymenttype"><img src="../images/paymenticon.png" alt="image description"></span>
+                    <span class="tg-copyright">2023 All Rights Reserved By &copy; Book Library</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="../js/vendor/jquery-library.js"></script>
+<script src="../js/vendor/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="../js/owl.carousel.min.js"></script>
+<script src="../js/jquery.vide.min.js"></script>
+<script src="../js/countdown.js"></script>
+<script src="../js/jquery-ui.js"></script>
+<script src="../js/parallax.js"></script>
+<script src="../js/countTo.js"></script>
+<script src="../js/appear.js"></script>
+<script src="../js/gmap3.js"></script>
+<script src="../js/main.js"></script>
+
+<script>
+    (function() {
+        'use strict';
+
+        const StaffManager = {
+            formData: {},
+            countdownTimer: null,
+            timeLeft: 300,
+
+            init: function() {
+                const self = this;
+
+                $('#addStaffBtn').on('click', function() {
+                    $('#createStaffModal').modal('show');
+                });
+
+                $('#createStaffForm').on('submit', function(e) {
+                    e.preventDefault();
+                    self.handleFormSubmit();
+                });
+
+                $('#verifyOtpBtn').on('click', function() {
+                    self.handleOtpVerification();
+                });
+
+                $('#backToFormBtn').on('click', function() {
+                    self.backToForm();
+                });
+
+                $('#resendOtpLink').on('click', function() {
+                    if (!$(this).hasClass('disabled')) {
+                        self.resendOtp();
+                    }
+                });
+
+                $('#createStaffModal').on('show.bs.modal', function() {
+                    self.createOtpInputs();
+                });
+
+                $('#createStaffModal').on('hidden.bs.modal', function() {
+                    self.resetModal();
+                });
+            },
+
+            createOtpInputs: function() {
+                const container = $('#otpContainer');
+                container.empty();
+
+                for (let i = 0; i < 6; i++) {
+                    const input = $('<input>', {
+                        type: 'text',
+                        class: 'otp-input',
+                        maxlength: 1,
+                        'data-index': i,
+                        inputmode: 'numeric'
+                    });
+                    container.append(input);
+                }
+
+                this.setupOtpInputHandlers();
+            },
+
+            setupOtpInputHandlers: function() {
+                const inputs = $('.otp-input');
+                inputs.off('input keydown paste');
+
+                inputs.on('input', function() {
+                    const val = this.value.replace(/[^0-9]/g, '');
+                    this.value = val;
+
+                    if (val.length === 1) {
+                        const index = parseInt($(this).data('index'));
+                        if (index < 5) {
+                            inputs.eq(index + 1).focus();
+                        }
+                    }
+                });
+
+                inputs.on('keydown', function(e) {
+                    if (e.keyCode === 8 && !this.value) {
+                        const index = parseInt($(this).data('index'));
+                        if (index > 0) {
+                            inputs.eq(index - 1).focus();
+                        }
+                    }
+                });
+
+                inputs.first().on('paste', function(e) {
+                    e.preventDefault();
+                    const pastedData = e.originalEvent.clipboardData.getData('text');
+                    const digits = pastedData.replace(/[^0-9]/g, '').slice(0, 6);
+
+                    inputs.each(function(index) {
+                        $(this).val(digits[index] || '');
+                    });
+
+                    if (digits.length === 6) {
+                        inputs.eq(5).focus();
+                    }
+                });
+            },
+
+            handleFormSubmit: function() {
+                const self = this;
+
+                this.formData = {
+                    step: 'validate',
+                    name: $('#staff_name').val(),
+                    username: $('#staff_username').val(),
+                    email: $('#staff_email').val(),
+                    phone: $('#staff_phone').val(),
+                    address: $('#staff_address').val(),
+                    password: $('#staff_password').val(),
+                    confirmPassword: $('#staff_confirmPassword').val()
+                };
+
+                $('#sendOtpBtn').prop('disabled', true)
+                    .html('<i class="fa fa-spinner fa-spin"></i> Sending...');
+
+                $.ajax({
+                    url: '/admin/create-staff',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(this.formData),
+                    success: function(response) {
+                        if (response.success) {
+                            self.showOtpForm();
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'OTP Sent!',
+                                text: 'Please check your email for the verification code.',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                        } else {
+                            Swal.fire('Error', response.message, 'error');
+                        }
+                    },
+                    error: function() {
+                        Swal.fire('Error', 'Failed to send OTP. Please try again.', 'error');
+                    },
+                    complete: function() {
+                        $('#sendOtpBtn').prop('disabled', false).text('Send OTP');
+                    }
+                });
+            },
+
+            handleOtpVerification: function() {
+                const self = this;
+                const otp = $('.otp-input').map(function() {
+                    return $(this).val();
+                }).get().join('');
+
+                if (otp.length !== 6) {
+                    Swal.fire('Error', 'Please enter all 6 digits.', 'error');
+                    return;
+                }
+
+                $('#verifyOtpBtn').prop('disabled', true)
+                    .html('<i class="fa fa-spinner fa-spin"></i> Verifying...');
+
+                $.ajax({
+                    url: '/admin/create-staff',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify($.extend({}, this.formData, {
+                        step: 'verify',
+                        otp: otp
+                    })),
+                    success: function(response) {
+                        if (response.success) {
+                            self.stopCountdown();
+                            $('#createStaffModal').modal('hide');
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: response.message,
+                                showConfirmButton: true
+                            }).then(function() {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire('Error', response.message, 'error');
+                            self.clearOtpInputs();
+                        }
+                    },
+                    error: function() {
+                        Swal.fire('Error', 'An error occurred. Please try again.', 'error');
+                    },
+                    complete: function() {
+                        $('#verifyOtpBtn').prop('disabled', false).text('Verify');
+                    }
+                });
+            },
+
+            showOtpForm: function() {
+                $('#staffInfoForm').hide();
+                $('#otpVerificationForm').show();
+                $('#otpEmailDisplay').text(this.formData.email);
+                this.startCountdown();
+
+                setTimeout(function() {
+                    $('.otp-input').first().focus();
+                }, 100);
+            },
+
+            backToForm: function() {
+                this.stopCountdown();
+                $('#otpVerificationForm').hide();
+                $('#staffInfoForm').show();
+                this.clearOtpInputs();
+            },
+
+            startCountdown: function() {
+                const self = this;
+                this.timeLeft = 300;
+                $('#resendOtpLink').addClass('disabled');
+                $('#otpCountdown').parent().removeClass('expired');
+
+                if (this.countdownTimer) {
+                    clearInterval(this.countdownTimer);
+                }
+
+                this.countdownTimer = setInterval(function() {
+                    self.timeLeft--;
+                    const minutes = Math.floor(self.timeLeft / 60);
+                    const seconds = self.timeLeft % 60;
+                    $('#otpCountdown').text(
+                        minutes + ':' + (seconds < 10 ? '0' : '') + seconds
+                    );
+
+                    if (self.timeLeft === 0) {
+                        self.stopCountdown();
+                        $('#otpCountdown').parent().addClass('expired');
+                        $('#otpCountdown').text('Expired');
+                        $('#resendOtpLink').removeClass('disabled');
+                    }
+                }, 1000);
+            },
+
+            stopCountdown: function() {
+                if (this.countdownTimer) {
+                    clearInterval(this.countdownTimer);
+                    this.countdownTimer = null;
+                }
+            },
+
+            resendOtp: function() {
+                const self = this;
+                $('#resendOtpLink').addClass('disabled');
+
+                $.ajax({
+                    url: '/admin/create-staff',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(this.formData),
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'OTP Resent!',
+                                text: 'A new code has been sent to your email.',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                            self.stopCountdown();
+                            self.startCountdown();
+                            self.clearOtpInputs();
+                        }
+                    }
+                });
+            },
+
+            clearOtpInputs: function() {
+                $('.otp-input').val('');
+                $('.otp-input').first().focus();
+            },
+
+            resetModal: function() {
+                this.stopCountdown();
+                $('#staffInfoForm').show();
+                $('#otpVerificationForm').hide();
+                $('#createStaffForm')[0].reset();
+                this.clearOtpInputs();
+                this.formData = {};
+            }
+        };
+
+        $(document).ready(function() {
+            StaffManager.init();
+        });
+
+    })();
+</script>
+
+</body>
+</html>
