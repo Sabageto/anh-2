@@ -64,6 +64,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/admin/**")
                 .access("hasRole('ADMIN')");
 
+
         // ============================================================
         // STAFF ENDPOINTS (/staff/*)
         // ============================================================

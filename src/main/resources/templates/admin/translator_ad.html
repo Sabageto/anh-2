@@ -212,7 +212,7 @@
                                                         <h4 class="modal-title" style="text-transform: none;">Edit
                                                             Translator</h4>
                                                     </div>
-                                                    <form method="post" th:action="@{/edit-translator}">
+                                                    <form method="post" th:action="@{/admin/edit-translator}">
                                                         <div class="modal-body">
                                                             <input type="hidden" name="id" th:value="${translator.id}">
                                                             <div th:with="isThis=${editTranslatorId != null and editTranslatorId == translator.id.toString()}">
@@ -302,14 +302,14 @@
         <nav aria-label="Page navigation" style="text-align: center;">
             <ul class="pagination">
                 <li th:classappend="${page == 1} ? 'disabled'">
-                    <a th:if="${page > 1}" th:href="@{/manage-translator(page=${page - 1})}">&laquo;</a>
+                    <a th:if="${page > 1}" th:href="@{/admin/manage-translator(page=${page - 1})}">&laquo;</a>
                     <span th:if="${page == 1}">&laquo;</span>
                 </li>
                 <li th:each="i : ${#numbers.sequence(1, totalPage)}" th:classappend="${i == page} ? 'active'">
-                    <a th:href="@{/manage-translator(page=${i})}" th:text="${i}"></a>
+                    <a th:href="@{/admin/manage-translator(page=${i})}" th:text="${i}"></a>
                 </li>
                 <li th:classappend="${page == totalPage} ? 'disabled'">
-                    <a th:if="${page < totalPage}" th:href="@{/manage-translator(page=${page + 1})}">&raquo;</a>
+                    <a th:if="${page < totalPage}" th:href="@{/admin/manage-translator(page=${page + 1})}">&raquo;</a>
                     <span th:if="${page == totalPage}">&raquo;</span>
                 </li>
             </ul>
@@ -326,7 +326,7 @@
                 </button>
                 <h4 class="modal-title" style="text-transform: none;">Add New Translator</h4>
             </div>
-            <form method="post" th:action="@{/create-translator}">
+            <form method="post" th:action="@{/admin/create-translator}">
                 <div class="modal-body">
                     <div class="form-group">
                         <label>Name <span style="color: red;">*</span></label>

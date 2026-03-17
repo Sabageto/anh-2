@@ -37,13 +37,69 @@
         }
 
         @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
         }
 
         .category-item.active a {
             color: #5cb85c;
             font-weight: bold;
+        }
+
+        /* Modal star rating styling */
+        .star-modal {
+            width: 32px;
+            height: 32px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23ddd" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>') center/contain no-repeat;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin: 0 4px;
+        }
+
+        .star-modal:hover,
+        .star-modal.selected {
+            transform: scale(1.15);
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23f0ad4e" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>');
+        }
+
+        .edit-btn {
+            padding: 6px 12px;
+            background-color: #5cb85c;
+            border-color: #5cb85c;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .edit-btn:hover {
+            background-color: #449d44;
+        }
+
+        /* Toast thông báo lớn hơn + màu xanh */
+        .swal-toast-big {
+            font-size: 16px !important;
+            min-width: 300px !important;
+            padding: 18px 24px !important;
+            background-color: #d4edda !important;
+            border-left: 5px solid #28a745 !important;
+        }
+
+        .swal-toast-big .swal2-title {
+            font-size: 16px !important;
+            color: #155724 !important;
+            font-weight: 600 !important;
+        }
+
+        .swal-toast-big .swal2-icon {
+            width: 36px !important;
+            height: 36px !important;
+            margin: 0 10px 0 0 !important;
         }
     </style>
 </head>
@@ -81,9 +137,6 @@
                                     Login<span class="sr-only">(current)</span></a>
                             </div>
                         </div>
-                        <div>
-
-                        </div>
                     </div>
                 </div>
             </div>
@@ -96,12 +149,11 @@
                                                                             alt="company name here"></a></strong>
                         <div class="tg-wishlistandcart">
                             <div sec:authorize="hasRole('USER')" class="dropdown tg-themedropdown tg-minicartdropdown">
-                                <a id="tg-minicart" class="tg-btnthemedropdown" data-toggle="dropdown"
-                                   aria-haspopup="true" aria-expanded="false">
-                                    <span class="tg-themebadge"
-                                          th:text="${cartTotalBooks != null ? cartTotalBooks : 0}"></span> <a
-                                        th:href="@{/view-cart}"><i class="icon-cart"></i>
-                                    <span style="margin-left: 10px;">Cart</span></a>
+                                <a id="tg-minicart" class="tg-btnthemedropdown" th:href="@{/view-cart}">
+                                <span class="tg-themebadge"
+                                      th:text="${cartTotalBooks != null ? cartTotalBooks : 0}"></span>
+                                    <i class="icon-cart"></i>
+                                    <span style="margin-left: 10px;">Cart</span>
                                 </a>
                             </div>
                         </div>
@@ -247,10 +299,10 @@
                                                         th:src="@{|/bookImage?id=${book.id}|}" alt="image description">
                                                 </figure>
                                                 <div class="tg-postbookcontent">
-														<span class="tg-bookprice">
-															<ins><span
-                                                                    th:text="${#numbers.formatInteger(book.price, 1, 'COMMA')}"></span> VND</ins>
-														</span>
+                                                    <span class="tg-bookprice">
+                                                        <ins><span
+                                                                th:text="${#numbers.formatInteger(book.price, 1, 'COMMA')}"></span> VND</ins>
+                                                    </span>
                                                     <ul class="tg-delevrystock">
                                                         <li><i class="icon-rocket"></i><span>Nationwide shipping</span>
                                                         </li>
@@ -332,14 +384,14 @@
                                                                 Translator(s)
                                                             </td>
                                                             <td style="padding: 10px;">
-                                                                    <span th:if="${book.bookTranslatorList != null and !book.bookTranslatorList.isEmpty()}">
-                                                                        <span th:each="bt, iter : ${book.bookTranslatorList}">
-                                                                            <span th:text="${bt.translator.name}"></span>
-                                                                            <span th:if="${bt.role != null}"
-                                                                                  th:text="${' (' + bt.role + ')'}"></span>
-                                                                            <span th:if="${!iter.last}">, </span>
-                                                                        </span>
+                                                                <span th:if="${book.bookTranslatorList != null and !book.bookTranslatorList.isEmpty()}">
+                                                                    <span th:each="bt, iter : ${book.bookTranslatorList}">
+                                                                        <span th:text="${bt.translator.name}"></span>
+                                                                        <span th:if="${bt.role != null}"
+                                                                              th:text="${' (' + bt.role + ')'}"></span>
+                                                                        <span th:if="${!iter.last}">, </span>
                                                                     </span>
+                                                                </span>
                                                                 <span th:if="${book.bookTranslatorList == null or book.bookTranslatorList.isEmpty()}">N/A</span>
                                                             </td>
                                                         </tr>
@@ -349,6 +401,14 @@
                                                             </td>
                                                             <td style="padding: 10px;"
                                                                 th:text="${book.size != null ? book.size : ''}"></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="font-weight: 600; padding: 10px;">
+                                                                Weight
+                                                            </td>
+                                                            <td style="padding: 10px;">
+                                                                <span th:text="${book.weight_kg != null ? book.weight_kg + ' kg' : 'N/A'}"></span>
+                                                            </td>
                                                         </tr>
                                                         <tr>
                                                             <td style="font-weight: 600; padding: 10px;">
@@ -362,7 +422,7 @@
                                                                 Publication Date
                                                             </td>
                                                             <td style="padding: 10px;"
-                                                                th:text="${book.date_publication}"></td>
+                                                                th:text="${#temporals.format(book.date_publication, 'dd-MM-yyyy')}"></td>
                                                         </tr>
                                                         <tr>
                                                             <td style="font-weight: 600; padding: 10px;">
@@ -398,7 +458,7 @@
                                                     </table>
                                                 </div>
 
-                                                <!-- ============ SERIES BUNDLE SECTION ============ -->
+                                                <!-- SERIES BUNDLE SECTION -->
                                                 <div th:if="${seriesId != null}" class="tg-series-bundle"
                                                      style="margin-top: 30px; margin-bottom: 20px;">
                                                     <div class="panel panel-success">
@@ -592,7 +652,6 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <!-- ============ END SERIES BUNDLE SECTION ============ -->
 
                                                 <div class="tg-description">
                                                     <p th:text="${book.description}"></p>
@@ -600,115 +659,128 @@
                                             </div>
                                         </div>
 
-                                        <div class="tg-aboutauthor">
-                                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                                <div class="tg-sectionhead">
-                                                    <h2>Reviews</h2>
-                                                </div>
-                                                <div th:if="${book.commentList == null or book.commentList.isEmpty()}">
-                                                    <i class="fa fa-comment-o"
-                                                       style="font-size: 40px; color: #bbb;"></i>
-                                                    <h5 style="color: #777; margin: 15px 0 5px 0;">No one has commented
-                                                        yet</h5>
+                                        <!-- REVIEWS SECTION -->
+                                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin-top: 40px;">
+                                            <h2 style="font-size: 22px; font-weight: 700; border-bottom: 3px solid #5cb85c; padding-bottom: 10px; margin-bottom: 20px;">
+                                                Reviews</h2>
+
+                                            <!-- No comments -->
+                                            <div th:if="${book.commentList == null or book.commentList.isEmpty()}"
+                                                 style="padding: 20px 0; color: #999;">
+                                                <i class="fa fa-comment-o" style="font-size: 36px;"></i>
+                                                <p style="margin-top: 10px;">No reviews yet. Be the first!</p>
+                                            </div>
+
+                                            <!-- Display comments: layout DỌC — tên/ngày → sao → content → Edit button -->
+                                            <div th:each="comment: ${book.commentList}"
+                                                 style="padding: 18px 0; border-bottom: 1px solid #eee;">
+
+                                                <!-- Tên + ngày -->
+                                                <div style="margin-bottom: 6px;">
+                                                    <strong style="font-size: 15px; color: #222;"
+                                                            th:text="${comment.user.name}"></strong>
+                                                    <span style="color: #aaa; font-size: 12px; margin-left: 10px;"
+                                                          th:text="${#dates.format(comment.created_at, 'dd-MM-yyyy HH:mm:ss')}"></span>
+                                                    <span th:if="${comment.updated_at != null and comment.updated_at.after(comment.created_at)}"
+                                                          style="color: #bbb; font-size: 11px; margin-left: 8px;">
+                                                        <i class="fa fa-pencil"></i>
+                                                        (Edited <span
+                                                            th:text="${#dates.format(comment.updated_at, 'dd-MM-yyyy')}"></span>)
+                                                    </span>
                                                 </div>
 
-                                                <div class="tg-authorbox" th:each="comment: ${book.commentList}">
-                                                    <div class="tg-authorinfo">
-                                                        <div class="tg-review">
-                                                            <div class="tg-leftarea">
-                                                                <div class="tg-authorname">
-                                                                    <h2 th:text="${comment.user.name}"></h2>
-                                                                    <span th:text="${'Time: '+comment.created_at}"></span>
-                                                                </div>
-                                                                <div class="review-stars-display">
-                                                                    <ul>
-                                                                        <li th:classappend="${1<=comment.star} ? 'star_done checked' : 'star_done'"></li>
-                                                                        <li th:classappend="${2<=comment.star} ? 'star_done checked' : 'star_done'"></li>
-                                                                        <li th:classappend="${3<=comment.star} ? 'star_done checked' : 'star_done'"></li>
-                                                                        <li th:classappend="${4<=comment.star} ? 'star_done checked' : 'star_done'"></li>
-                                                                        <li th:classappend="${5<=comment.star} ? 'star_done checked' : 'star_done'"></li>
-                                                                    </ul>
+                                                <!-- Sao -->
+                                                <div class="review-stars-display" style="margin-bottom: 6px;">
+                                                    <ul>
+                                                        <li th:classappend="${1<=comment.star} ? 'star_done checked' : 'star_done'"></li>
+                                                        <li th:classappend="${2<=comment.star} ? 'star_done checked' : 'star_done'"></li>
+                                                        <li th:classappend="${3<=comment.star} ? 'star_done checked' : 'star_done'"></li>
+                                                        <li th:classappend="${4<=comment.star} ? 'star_done checked' : 'star_done'"></li>
+                                                        <li th:classappend="${5<=comment.star} ? 'star_done checked' : 'star_done'"></li>
+                                                    </ul>
+                                                </div>
+
+                                                <!-- Content (nếu có) — ngay dưới sao -->
+                                                <div th:if="${comment.content != null and !comment.content.trim().isEmpty()}"
+                                                     style="color: #444; font-size: 14px; margin-bottom: 8px;"
+                                                     th:text="${comment.content}"></div>
+
+                                                <!-- Nút Edit — cuối cùng, chỉ owner, không di chuyển -->
+                                                <div sec:authorize="isAuthenticated()"
+                                                     th:if="${comment.user.account.username == #authentication.principal.username}"
+                                                     style="margin-top: 6px;">
+                                                    <button type="button" class="edit-btn"
+                                                            th:data-comment-id="${comment.id}"
+                                                            th:data-book-id="${book.id}"
+                                                            th:data-star="${comment.star}"
+                                                            th:data-content="${comment.content}"
+                                                            onclick="openEditModal(this)">
+                                                        <i class="fa fa-pencil"></i> Edit
+                                                    </button>
+                                                </div>
+
+                                            </div>
+
+                                            <!-- User comment section -->
+                                            <div sec:authorize="isAuthenticated()">
+                                                <div sec:authorize="!hasRole('ADMIN')">
+
+                                                    <!-- Case 2: Can review -->
+                                                    <div th:if="${(hasCommented == null or !hasCommented) and (canReview != null and canReview)}"
+                                                         style="margin-top: 24px;">
+                                                        <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 12px;">
+                                                            Your review</h4>
+                                                        <form th:action="@{/save-comment}" th:object="${comment}"
+                                                              method="post" onsubmit="return validateRating()">
+                                                            <input type="hidden" name="bookId" th:value="${book.id}">
+                                                            <input type="hidden" name="username" th:value="${username}">
+                                                            <!-- Stars -->
+                                                            <div style="margin-bottom: 10px;">
+                                                                <ul class="ratings"
+                                                                    style="list-style:none; padding:0; margin:0;">
+                                                                    <li class="star"></li>
+                                                                    <li class="star"></li>
+                                                                    <li class="star"></li>
+                                                                    <li class="star"></li>
+                                                                    <li class="star"></li>
+                                                                </ul>
+                                                                <input type="number" th:field="*{star}"
+                                                                       id="starts_submit" value=""
+                                                                       style="display:none;">
+                                                                <span id="rating-error"
+                                                                      style="color:#e74c3c; font-size:13px; display:none; margin-top:4px;">
+                                                                    Please select at least 1 star!
+                                                                </span>
+                                                            </div>
+                                                            <!-- Content -->
+                                                            <div style="margin-bottom: 10px;">
+                                                                <textarea th:field="*{content}" id="new-comment-content"
+                                                                          style="width:100%; height:90px; resize:none; border:1px solid #ddd; border-radius:4px; padding:8px; font-size:14px;"
+                                                                          placeholder="Write your review here... (optional)"></textarea>
+                                                                <div style="text-align:right; color:#aaa; font-size:12px; margin-top:3px;">
+                                                                    <span id="newCommentCharCount">0</span> / 5000
                                                                 </div>
                                                             </div>
-                                                            <div class="tg-comment">
-                                                                <p th:text="${comment.content}"></p>
-                                                            </div>
+                                                            <button type="submit" class="tg-btn tg-active"
+                                                                    style="padding: 6px 20px;">Submit
+                                                            </button>
+                                                        </form>
+                                                    </div>
+
+                                                    <!-- Case 3: Cannot review -->
+                                                    <div th:if="${(canReview == null or !canReview) and (hasCommented == null or !hasCommented)}"
+                                                         style="margin-top: 20px;">
+                                                        <div class="alert alert-info" style="font-size: 14px;">
+                                                            <i class="fa fa-info-circle"></i> You can only review books
+                                                            you have purchased.
                                                         </div>
                                                     </div>
-                                                </div>
 
-                                                <div sec:authorize="isAuthenticated()">
-                                                    <div sec:authorize="!hasRole('ADMIN')" class="tg-authorbox">
-                                                        <div th:if="${hasCommented != null and hasCommented}">
-                                                            <div class="tg-authorinfo" style="margin-top: 30px;">
-                                                                <div class="alert alert-success" role="alert">
-                                                                    <i class="fa fa-check-circle"
-                                                                       style="margin-right: 8px;"></i>
-                                                                    <strong>Thank you!</strong> You have already
-                                                                    reviewed this book.
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div th:if="${(hasCommented == null or !hasCommented) and (canReview != null and canReview)}">
-                                                            <form th:action="@{/save-comment}" th:object="${comment}"
-                                                                  method="post" onsubmit="return validateRating()">
-                                                                <div class="tg-authorinfo">
-                                                                    <input type="hidden" name="book_id"
-                                                                           th:value="${book.id}">
-                                                                    <input type="hidden" name="username"
-                                                                           th:value="${username}">
-                                                                    <div class="tg-review">
-                                                                        <div class="tg-leftarea">
-                                                                            <div class="tg-authorname">
-                                                                                <h2>Your review</h2>
-                                                                            </div>
-                                                                            <div class="rating-input-wrapper">
-                                                                                <ul class="ratings">
-                                                                                    <li class="star"></li>
-                                                                                    <li class="star"></li>
-                                                                                    <li class="star"></li>
-                                                                                    <li class="star"></li>
-                                                                                    <li class="star"></li>
-                                                                                </ul>
-                                                                                <span id="rating-error"
-                                                                                      style="color: #e74c3c; font-size: 14px; display: none; margin-top: 5px;">Please select at least 1 star before submitting!</span>
-                                                                            </div>
-                                                                        </div>
-                                                                        <input type="number" th:field="*{star}"
-                                                                               id="starts_submit" value=""
-                                                                               style="display: none">
-                                                                        <div class="tg-comment">
-                                                                        <textarea th:field="*{content}" cols="50"
-                                                                                  rows="4"
-                                                                                  style="resize: none; width: 100%; height: 100px;"
-                                                                                  placeholder="Write your review here..."></textarea>
-                                                                        </div>
-                                                                        <input class="tg-btn tg-active" type="submit"
-                                                                               value="Submit review"
-                                                                               style="margin-top: 10px;">
-                                                                    </div>
-                                                                </div>
-                                                            </form>
-                                                        </div>
-
-                                                        <div th:if="${(canReview == null or !canReview) and (hasCommented == null or !hasCommented)}">
-                                                            <div class="tg-authorinfo" style="margin-top: 30px;">
-                                                                <div class="alert alert-info" role="alert">
-                                                                    <i class="fa fa-info-circle"
-                                                                       style="margin-right: 8px;"></i>
-                                                                    <strong>Note:</strong> You can only review books
-                                                                    that you have purchased and received (Completed
-                                                                    orders only).
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <!-- ============ RELATED PRODUCTS - SERIES BOOKS ============ -->
+                                        <!-- RELATED PRODUCTS -->
                                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"
                                              th:if="${seriesBooks != null and !seriesBooks.isEmpty()}">
                                             <div class="tg-sectionhead"
@@ -717,9 +789,8 @@
                                             </div>
                                             <div th:if="${book.series != null}"
                                                  style="margin: 10px 0px;">
-                                                    <strong>Series:</strong> <span th:text="${book.series.name}"
-                                                                                   style="color: #2ecc71; font-weight: 600;"></span>
-                                                </span>
+                                                <strong>Series:</strong> <span th:text="${book.series.name}"
+                                                                               style="color: #2ecc71; font-weight: 600;"></span>
                                             </div>
 
                                             <div class="row" style="margin-top: 30px;">
@@ -773,7 +844,6 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <!-- ============ END RELATED PRODUCTS ============ -->
 
                                     </div>
                                 </div>
@@ -833,15 +903,15 @@
                                     <li>
                                         <i class="icon-phone-handset"></i>
                                         <span>
-												<em>0812 567 889</em>
-												<em>+84 1245 6767</em>
-											</span>
+                                            <em>0812 567 889</em>
+                                            <em>+84 1245 6767</em>
+                                        </span>
                                     </li>
                                     <li>
                                         <i class="icon-clock"></i>
                                         <span>
-												Serving 7 days a week from 9:00 - 22:00
-											</span>
+                                            Serving 7 days a week from 9:00 - 22:00
+                                        </span>
                                     </li>
                                 </ul>
                                 <ul class="tg-socialicons">
@@ -892,6 +962,68 @@
         </div>
     </footer>
 </div>
+
+<!-- ============ EDIT COMMENT MODAL ============ -->
+<div class="modal fade" id="editCommentModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #5cb85c; color: white;">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Edit Your Review</h4>
+            </div>
+
+            <form id="editCommentForm" th:action="@{/save-comment}" method="post" onsubmit="return validateEditForm()">
+                <div class="modal-body">
+                    <!-- Book info -->
+                    <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #5cb85c; margin-bottom: 20px; border-radius: 4px;">
+                        <p style="margin: 0;"><strong>Book:</strong> <span id="modalBookTitle"></span></p>
+                        <p style="color: #999; font-size: 13px; margin: 5px 0;">By <span id="modalBookAuthor"></span>
+                        </p>
+                    </div>
+
+                    <!-- Hidden inputs -->
+                    <input type="hidden" name="commentId" id="modalCommentId">
+                    <input type="hidden" name="bookId" id="modalBookId">
+                    <input type="hidden" name="star" id="modalStar">
+
+                    <!-- Rating (bắt buộc) -->
+                    <div class="form-group">
+                        <label><strong>Rating: <span style="color: #d9534f;">*</span></strong></label>
+                        <div style="display: flex; gap: 8px; margin: 10px 0;">
+                            <div id="modalRatings" style="display: flex; gap: 8px;">
+                                <div class="star-modal" data-value="1"></div>
+                                <div class="star-modal" data-value="2"></div>
+                                <div class="star-modal" data-value="3"></div>
+                                <div class="star-modal" data-value="4"></div>
+                                <div class="star-modal" data-value="5"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Content (tuỳ chọn) -->
+                    <div class="form-group">
+                        <label><strong>Your Review:</strong> <span
+                                style="color: #999; font-weight: normal; font-size: 13px;">(optional)</span></label>
+                        <textarea name="content" id="modalContent" class="form-control" rows="5"
+                                  style="resize: none; border: 2px solid #ddd;"
+                                  placeholder="Write your review here... (optional)"></textarea>
+                        <div style="text-align: right; color: #999; font-size: 12px; margin-top: 5px;">
+                            <span id="modalCharCount">0</span> / 5000
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ============ SCRIPTS ============ -->
 <script src="js/vendor/jquery-library.js"></script>
 <script src="js/vendor/bootstrap.min.js"></script>
 <script src="js/owl.carousel.min.js"></script>
@@ -905,47 +1037,196 @@
 <script src="js/main.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<script th:if="${canBuyFullSeries != null && canBuyFullSeries}">
-    function confirmSeriesPurchase() {
-        // Get values from Thymeleaf
-        var seriesName = '[[${seriesName}]]';
-        var volumeCount = [[${#lists.size(seriesAvailableBooks)}]];
-        var totalPrice = [[${seriesDiscountedPrice}]];
+<script th:inline="javascript">
+    // ============================================================
+    // EDIT MODAL
+    // ============================================================
 
-        // Format price with commas
-        var formattedPrice = totalPrice.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    // Mở modal edit với dữ liệu từ button
+    function openEditModal(btn) {
+        const commentId = btn.getAttribute('data-comment-id');
+        const bookId = btn.getAttribute('data-book-id');
+        const star = btn.getAttribute('data-star');
+        const content = btn.getAttribute('data-content');
+
+        // Lấy thông tin sách từ trang
+        const bookTitle = document.querySelector('.tg-booktitle h2').textContent;
+        const bookAuthor = document.querySelector('.tg-bookwriter span').textContent;
+
+        // Điền vào modal
+        document.getElementById('modalCommentId').value = commentId;
+        document.getElementById('modalBookId').value = bookId;
+        document.getElementById('modalBookTitle').textContent = bookTitle;
+        document.getElementById('modalBookAuthor').textContent = bookAuthor;
+        document.getElementById('modalStar').value = star;
+        document.getElementById('modalContent').value = content || '';
+
+        // Cập nhật hiển thị sao
+        updateModalStars(star);
+
+        // Cập nhật bộ đếm ký tự
+        updateModalCharCount();
+
+        // Hiện modal
+        $('#editCommentModal').modal('show');
+    }
+
+    // ============================================================
+    // HIỂN THỊ THÔNG BÁO SUCCESS/ERROR TỪ FLASH ATTRIBUTE
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', function () {
+        // Kiểm tra success message
+        var successMessage = /*[[${success}]]*/ '';
+        if (successMessage && successMessage.trim() !== '') {
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: successMessage,
+                showConfirmButton: false,
+                timer: 3500,
+                timerProgressBar: true,
+                customClass: {popup: 'swal-toast-big'}
+            });
+        }
+
+        // Kiểm tra error message
+        var errorMessage = /*[[${error}]]*/ '';
+        if (errorMessage && errorMessage.trim() !== '') {
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'error',
+                title: errorMessage,
+                showConfirmButton: false,
+                timer: 3500,
+                timerProgressBar: true,
+                customClass: {popup: 'swal-toast-big'}
+            });
+        }
+    });
+
+    // Cập nhật hiển thị sao trong modal
+    function updateModalStars(rating) {
+        const stars = document.querySelectorAll('.star-modal');
+        stars.forEach((star, idx) => {
+            if (idx < parseInt(rating)) {
+                star.classList.add('selected');
+            } else {
+                star.classList.remove('selected');
+            }
+        });
+    }
+
+    // Cập nhật bộ đếm ký tự modal
+    function updateModalCharCount() {
+        const content = document.getElementById('modalContent').value;
+        document.getElementById('modalCharCount').textContent = content.length;
+    }
+
+    // Validate form edit trước khi submit
+    // - Star: bắt buộc
+    // - Content: tuỳ chọn, nếu có thì không được vượt 5000 ký tự
+    function validateEditForm() {
+        const star = document.getElementById('modalStar').value;
+        const content = document.getElementById('modalContent').value;
+
+        // Bắt buộc phải chọn sao
+        if (!star || parseInt(star) < 1) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Please select a rating',
+                text: 'Star rating is required.',
+                showConfirmButton: false,
+                timer: 1800
+            });
+            return false;
+        }
+
+        // Nếu có nhập content thì kiểm tra độ dài
+        if (content.length > 5000) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Review is too long',
+                text: 'Maximum 5000 characters',
+                showConfirmButton: false,
+                timer: 1800
+            });
+            return false;
+        }
+
+        return true;
+    }
+
+    // ============================================================
+    // STAR RATING INTERACTION (MODAL)
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', function () {
+        const stars = document.querySelectorAll('.star-modal');
+
+        stars.forEach(star => {
+            // Click: lưu rating mới vào hidden input và cập nhật hiển thị
+            star.addEventListener('click', function () {
+                const rating = this.getAttribute('data-value');
+                document.getElementById('modalStar').value = rating;
+                updateModalStars(rating);
+            });
+
+            // Hover vào: tô sáng đến sao đang hover
+            star.addEventListener('mouseenter', function () {
+                const rating = this.getAttribute('data-value');
+                stars.forEach((s, idx) => {
+                    s.classList.toggle('selected', idx < parseInt(rating));
+                });
+            });
+
+            // Rời khỏi từng sao: khôi phục theo giá trị đã chọn
+            star.addEventListener('mouseleave', function () {
+                const rating = document.getElementById('modalStar').value || 0;
+                updateModalStars(rating);
+            });
+        });
+
+        // Bộ đếm ký tự modal
+        document.getElementById('modalContent').addEventListener('input', updateModalCharCount);
+    });
+
+    // ============================================================
+    // SERIES PURCHASE CONFIRMATION
+    // ============================================================
+    function confirmSeriesPurchase() {
+        var seriesName = document.querySelector('.tg-series-bundle .panel-title').textContent.trim().replace('Full Series: ', '');
+        var volumeCount = document.querySelectorAll('.col-xs-6.col-sm-4').length;
+        var totalPrice = document.querySelector('.modal-body div:last-child strong').nextElementSibling.textContent;
 
         Swal.fire({
             title: 'Add Full Series to Cart?',
-            html: '<div style="text-align: left; padding: 10px;">' +
-                  '<p style="font-size: 16px; margin-bottom: 10px;"><strong>' + seriesName + '</strong></p>' +
-                  '<p style="margin: 5px 0;">You are adding <strong>' + volumeCount + ' volumes</strong> to cart</p>' +
-                  '<p style="margin: 5px 0;">Total: <strong style="color: #5cb85c; font-size: 18px;">' +
-                  formattedPrice + ' VND</strong></p>' +
-                  '<p style="margin: 5px 0; color: #666; font-size: 14px;"><i class="fa fa-tag"></i> 5% discount included</p>' +
-                  '</div>',
+            html: '<div style="text-align: left;"><p><strong>' + seriesName + '</strong></p><p>' + volumeCount + ' volumes</p><p style="color: #5cb85c; font-size: 18px;"><strong>' + totalPrice + '</strong></p></div>',
             icon: 'question',
             showCancelButton: true,
             confirmButtonColor: '#5cb85c',
-            cancelButtonColor: '#d33',
-            confirmButtonText: '<i class="fa fa-check"></i> Confirm',
-            cancelButtonText: '<i class="fa fa-times"></i> Cancel',
-            reverseButtons: true
+            confirmButtonText: 'Confirm',
+            cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.isConfirmed) {
                 document.getElementById('seriesPurchaseForm').submit();
             }
         });
     }
-</script>
 
-<script>
-    // Validation cho rating
+    // ============================================================
+    // VALIDATION CHO FORM TẠO COMMENT MỚI
+    // - Star: bắt buộc
+    // - Content: tuỳ chọn, nếu có thì không được vượt 5000 ký tự
+    // ============================================================
     function validateRating() {
         var ratingInput = document.getElementById("starts_submit");
         var ratingValue = parseInt(ratingInput.value);
         var errorSpan = document.getElementById("rating-error");
+        var contentInput = document.getElementById("new-comment-content");
+        var contentValue = contentInput ? contentInput.value : '';
 
+        // Bắt buộc phải chọn sao
         if (!ratingValue || ratingValue < 1) {
             errorSpan.style.display = "block";
             Swal.fire({
@@ -958,12 +1239,26 @@
             return false;
         }
 
+        // Nếu có nhập content thì kiểm tra độ dài
+        if (contentValue.length > 5000) {
+            Swal.fire({
+                position: 'top',
+                icon: 'warning',
+                title: 'Review is too long',
+                text: 'Maximum 5000 characters',
+                showConfirmButton: false,
+                timer: 1500,
+            });
+            return false;
+        }
+
         errorSpan.style.display = "none";
         return true;
     }
-</script>
 
-<script>
+    // ============================================================
+    // STAR RATING INTERACTION (FORM TẠO MỚI)
+    // ============================================================
     document.addEventListener('DOMContentLoaded', function () {
         var ratingLists = document.querySelectorAll('.ratings');
 
@@ -1010,10 +1305,24 @@
             }
         });
     });
-</script>
 
-<!-- QUANTITY INPUT VALIDATION-->
-<script>
+    // ============================================================
+    // BỘ ĐẾM KÝ TỰ CHO FORM TẠO COMMENT MỚI
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', function () {
+        var newContentInput = document.getElementById('new-comment-content');
+        var newCharCount = document.getElementById('newCommentCharCount');
+
+        if (newContentInput && newCharCount) {
+            newContentInput.addEventListener('input', function () {
+                newCharCount.textContent = newContentInput.value.length;
+            });
+        }
+    });
+
+    // ============================================================
+    // QUANTITY INPUT VALIDATION
+    // ============================================================
     document.addEventListener('DOMContentLoaded', function () {
         var input = document.getElementById('quantity1');
         var stock = document.getElementById('numberInStock');
@@ -1024,30 +1333,83 @@
         var minus = document.querySelector('.minus');
         var plus = document.querySelector('.plus');
 
-        function fix() {
-            var val = parseInt(input.value);
-            if (!val || val < 1) input.value = 1;
-            else if (val > max) input.value = max;
+        // Hàm hiển thị toast thông báo dùng chung
+        function showToast(icon, title, text) {
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: icon,
+                title: title,
+                text: text || '',
+                showConfirmButton: false,
+                timer: 2500,
+                timerProgressBar: true,
+                customClass: {popup: 'swal-toast-big'}
+            });
         }
 
-        input.addEventListener('blur', fix);
-        input.addEventListener('input', fix);
+        // fix(showNotify):
+        //   showNotify = true  → kiểm tra và hiện toast nếu sai
+        //   showNotify = false → chỉ sửa giá trị, không toast (tránh spam khi đang gõ)
+        function fix(showNotify) {
+            var val = parseInt(input.value);
 
+            if (!val || val <= 0) {
+                if (showNotify) {
+                    showToast('warning', 'Quantity must be at least 1');
+                }
+                input.value = 1;
+            } else if (val > max) {
+                if (showNotify) {
+                    showToast('error', 'Quantity exceeds available stock');
+                }
+                input.value = max;
+            }
+        }
+
+        // Khi rời khỏi ô nhập: validate + thông báo
+        input.addEventListener('blur', function () {
+            fix(true);
+        });
+
+        // Khi gõ: validate và hiện toast ngay lập tức nếu vượt giới hạn
+        input.addEventListener('input', function () {
+            fix(true);
+        });
+
+        // Nút giảm (−)
         minus.addEventListener('click', function (e) {
             e.preventDefault();
             var val = parseInt(input.value) || 1;
-            input.value = val > 1 ? val - 1 : 1;
+            if (val <= 1) {
+                showToast('warning', 'Quantity must be at least 1');
+                input.value = 1;
+            } else {
+                input.value = val - 1;
+            }
         });
 
+        // Nút tăng (+)
         plus.addEventListener('click', function (e) {
             e.preventDefault();
             var val = parseInt(input.value) || 1;
-            input.value = val < max ? val + 1 : max;
+            if (val >= max) {
+                showToast('error', 'Quantity exceeds available stock');
+                input.value = max;
+            } else {
+                input.value = val + 1;
+            }
         });
 
-        input.closest('form').addEventListener('submit', fix);
-        fix();
+        // Validate lần cuối trước khi submit form (im lặng)
+        input.closest('form').addEventListener('submit', function () {
+            fix(false);
+        });
+
+        // Khởi tạo giá trị hợp lệ ban đầu
+        fix(false);
     });
 </script>
+
 </body>
 </html>

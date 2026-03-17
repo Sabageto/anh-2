@@ -6,6 +6,9 @@ import com.thunga.web.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Optional;
+
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Integer> {
     /**
@@ -16,7 +19,16 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
     /**
      * Tìm comment của user cho book cụ thể
      */
-    Comment findByUserAndBook(User user, Book book);
+    List<Comment> findByBook(Book book);
+
+    /**
+     * Tìm comment cụ thể của user cho book (dùng để check ownership)
+     */
+    Optional<Comment> findByIdAndUser(Integer commentId, User user);
+
+    /**
+     * Tìm comment của user cho book (để check nếu đã edit)
+     */
+    Optional<Comment> findByUserAndBook(User user, Book book);
 
 }
-

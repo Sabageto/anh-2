@@ -61,14 +61,10 @@
                             </ul>
                             <br>
                             <a class="nav-link text" th:href="@{/signup}" style="margin-right: 30px"
-                               sec:authorize="!isAuthenticated()">
-                                Sign up<span class="sr-only">(current)</span></a>
-                            <a class="nav-link text" th:href="@{/login}" sec:authorize="!isAuthenticated()">
-                                Login<span class="sr-only">(current)</span></a>
+                               sec:authorize="!isAuthenticated()">Sign up<span class="sr-only">(current)</span></a>
+                            <a class="nav-link text" th:href="@{/login}" sec:authorize="!isAuthenticated()">Login<span
+                                    class="sr-only">(current)</span></a>
                         </div>
-                    </div>
-                    <div>
-
                     </div>
                 </div>
             </div>
@@ -105,16 +101,14 @@
                                 <li><a th:href="@{/admin/manage-product}" sec:authorize="hasRole('ADMIN')">Books</a>
                                 </li>
                                 <li><a th:href="@{/admin/manage-category}"
-                                       sec:authorize="hasRole('ADMIN')">Categories</a>
-                                </li>
+                                       sec:authorize="hasRole('ADMIN')">Categories</a></li>
                                 <li><a th:href="@{/admin/manage-author}" sec:authorize="hasRole('ADMIN')">Authors</a>
                                 </li>
                                 <li><a th:href="@{/admin/manage-user}" sec:authorize="hasRole('ADMIN')">Users</a></li>
                                 <li><a th:href="@{/admin/manage-staff}" sec:authorize="hasRole('ADMIN')">Staff</a></li>
                                 <li><a th:href="@{/admin/manage-order}" sec:authorize="hasRole('ADMIN')">Orders</a></li>
                                 <li><a th:href="@{/admin/manage-promotion}"
-                                       sec:authorize="hasRole('ADMIN')">Promotions</a>
-                                </li>
+                                       sec:authorize="hasRole('ADMIN')">Promotions</a></li>
                                 <li><a th:href="@{/admin/statistic}" sec:authorize="hasRole('ADMIN')">Statistics</a>
                                 </li>
                             </ul>
@@ -125,6 +119,7 @@
         </div>
     </div>
 </header>
+
 <div class="tg-innerbanner tg-haslayout tg-parallax tg-bginnerbanner" data-z-index="-100"
      data-appear-top-offset="600" data-parallax="scroll" data-image-src="../images/parallax/bgparallax-07.jpg">
     <div class="container">
@@ -141,11 +136,11 @@
         </div>
     </div>
 </div>
+
 <main id="tg-main" class="tg-main tg-haslayout">
     <div class="tg-sectionspace tg-haslayout" style="padding-top: 50px;">
         <div class="container">
 
-            <!-- Flash messages from RedirectAttributes -->
             <div th:if="${successMessage}" class="alert alert-success alert-dismissible" role="alert">
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span>
                 </button>
@@ -163,7 +158,6 @@
                         <div id="tg-content" class="tg-content">
                             <div class="tg-products">
                                 <div class="tg-productgrid">
-
                                     <div class="row">
                                         <div style="overflow-x: auto;">
                                             <table class="table table-bordered">
@@ -181,6 +175,7 @@
                                                     <th>Status</th>
                                                     <th style="min-width: 200px;">Actions</th>
                                                 </tr>
+
                                                 <th:block th:each="order: ${orderList}">
                                                     <tr>
                                                         <td th:text="${orderList.indexOf(order)+1}"></td>
@@ -189,7 +184,6 @@
                                                         <td th:text="${order.phone}"></td>
                                                         <td th:text="${order.user != null ? order.user.address : ''}"></td>
 
-                                                        <!-- ✅ FIXED: Changed order.staff to order.admin -->
                                                         <td>
                                                             <span th:if="${order.admin != null}"
                                                                   th:text="${order.admin.name}"></span>
@@ -199,26 +193,26 @@
 
                                                         <!-- Promotion Codes -->
                                                         <td>
-                                                            <span th:if="${orderPromotions.get(order.id) != null and !orderPromotions.get(order.id).isEmpty()}"
-                                                                  th:each="code : ${orderPromotions.get(order.id)}"
+                                                            <span th:if="${order.voucher != null}"
                                                                   class="label label-success promotion-info"
                                                                   style="margin: 2px;"
-                                                                  th:text="${code}"></span>
-                                                            <span th:if="${orderPromotions.get(order.id) == null or orderPromotions.get(order.id).isEmpty()}">-</span>
+                                                                  th:text="${order.voucher.code}"></span>
+                                                            <span th:if="${order.voucher == null}">-</span>
                                                         </td>
 
                                                         <!-- Discount Amount -->
                                                         <td>
-                                                            <span th:if="${orderDiscounts.get(order.id) != null and orderDiscounts.get(order.id) > 0}"
+                                                            <span th:if="${order.discount_amount != null && order.discount_amount > 0}"
                                                                   class="discount-amount"
-                                                                  th:text="'-' + ${#numbers.formatInteger(orderDiscounts.get(order.id), 1, 'COMMA')} + ' VND'"></span>
-                                                            <span th:if="${orderDiscounts.get(order.id) == null or orderDiscounts.get(order.id) == 0}">-</span>
+                                                                  th:text="'-' + ${#numbers.formatInteger(order.discount_amount, 1, 'COMMA')} + ' VND'"></span>
+                                                            <span th:if="${order.discount_amount == null || order.discount_amount == 0}">-</span>
                                                         </td>
 
-                                                        <!-- Total Cost -->
+                                                        <!-- Total -->
                                                         <td>
                                                             <strong th:text="${#numbers.formatInteger(order.getFinalTotal(), 1, 'COMMA') + ' VND'}"></strong>
                                                         </td>
+
                                                         <!-- Payment Status -->
                                                         <td>
                                                             <span th:if="${order.payment_status == 'UNPAID'}"
@@ -242,6 +236,10 @@
                                                             <span th:if="${order.status == 'Approved'}"
                                                                   class="label label-warning"
                                                                   th:text="${order.status}"></span>
+                                                            <span th:if="${order.status == 'Request'}"
+                                                                  class="label"
+                                                                  style="background-color: #e67e22; color: white;"
+                                                                  th:text="${order.status}"></span>
                                                             <span th:if="${order.status == 'In Delivery'}"
                                                                   class="label label-primary"
                                                                   th:text="${order.status}"></span>
@@ -251,23 +249,23 @@
                                                             <span th:if="${order.status == 'Cancelled'}"
                                                                   class="label label-danger"
                                                                   th:text="${order.status}"></span>
-                                                            <span th:if="${order.status == 'Returned'}"
-                                                                  class="label"
+                                                            <span th:if="${order.status == 'Returned'}" class="label"
                                                                   style="background-color: #34495e; color: white;"
                                                                   th:text="${order.status}"></span>
                                                         </td>
 
+                                                        <!-- Actions -->
                                                         <td>
-                                                            <!-- Details button (eye) - CLICK HERE TO CONFIRM PAYMENT -->
+                                                            <!-- View detail -->
                                                             <a th:href="@{|/admin/manage-orderDetail?id=${order.id}|}">
                                                                 <button type="button" class="btn btn-info btn-sm"
-                                                                        title="View details and confirm payment">
+                                                                        title="View details">
                                                                     <i class="fa fa-eye"></i>
                                                                 </button>
                                                             </a>
 
-                                                            <!-- ✅ FIXED: Changed order.staff to order.admin -->
-                                                            <button th:if="${order.status == 'Pending' and order.admin == null}"
+                                                            <!-- Assign staff -->
+                                                            <button th:if="${order.status == 'Pending' or order.status == 'Assigned'}"
                                                                     type="button" class="btn btn-success btn-sm"
                                                                     data-toggle="modal"
                                                                     th:data-target="${'#myModal_assign'+order.id}"
@@ -275,20 +273,29 @@
                                                                 <i class="fa fa-user-plus"></i>
                                                             </button>
 
-                                                            <!-- Edit button (pencil) -->
-                                                            <button type="button" class="btn btn-warning btn-sm"
+                                                            <!-- Edit status -->
+                                                            <button th:if="${order.status != 'Request'}"
+                                                                    type="button" class="btn btn-warning btn-sm"
                                                                     data-toggle="modal"
                                                                     th:data-target="${'#myModal_edit'+order.id}"
                                                                     title="Edit">
                                                                 <i class="fa fa-pencil"></i>
                                                             </button>
+
+                                                            <!-- Request: review button -->
+                                                            <button th:if="${order.status == 'Request'}"
+                                                                    type="button" class="btn btn-warning btn-sm"
+                                                                    data-toggle="modal"
+                                                                    th:data-target="${'#cancelModal_'+order.id}"
+                                                                    title="Review cancel request">
+                                                                <i class="fa fa-exclamation-triangle"></i> Cancel
+                                                                Requested
+                                                            </button>
                                                         </td>
                                                     </tr>
 
-                                                    <!-- ============================================================ -->
-                                                    <!-- MODAL: Assign Staff  - ✅ FIXED: Changed order.staff to order.admin  -->
-                                                    <!-- ============================================================ -->
-                                                    <div th:if="${order.status == 'Pending' and order.admin == null}"
+                                                    <!-- MODAL: Assign Staff -->
+                                                    <div th:if="${order.status == 'Pending' or order.status == 'Assigned'}"
                                                          class="modal fade"
                                                          th:id="${'myModal_assign'+order.id}"
                                                          tabindex="-1" role="dialog">
@@ -296,38 +303,27 @@
                                                             <div class="modal-content">
                                                                 <div class="modal-header">
                                                                     <button type="button" class="close"
-                                                                            data-dismiss="modal"
-                                                                            aria-label="Close"><span aria-hidden="true">&times;</span>
-                                                                    </button>
-                                                                    <h4 class="modal-title">
-                                                                        Assign Order #<span
-                                                                            th:text="${order.id}"></span> to Staff
-                                                                    </h4>
+                                                                            data-dismiss="modal" aria-label="Close">
+                                                                        <span aria-hidden="true">&times;</span></button>
+                                                                    <h4 class="modal-title">Assign Order #<span
+                                                                            th:text="${order.id}"></span> to Staff</h4>
                                                                 </div>
                                                                 <div class="modal-body">
-
-                                                                    <!-- No eligible staff available -->
                                                                     <div th:if="${eligibleStaff == null or eligibleStaff.isEmpty()}"
                                                                          class="alert alert-warning"
                                                                          style="margin-bottom: 0;">
                                                                         No staff available. All staff members have
-                                                                        reached
-                                                                        the maximum active-order limit.
+                                                                        reached the maximum active-order limit.
                                                                     </div>
-
-                                                                    <!-- Staff available → show form -->
                                                                     <div th:if="${eligibleStaff != null and !eligibleStaff.isEmpty()}">
                                                                         <form th:action="@{/admin/assign-order}"
                                                                               method="post">
                                                                             <input type="hidden" name="orderId"
                                                                                    th:value="${order.id}">
-
                                                                             <div class="form-group">
                                                                                 <label>Select Staff</label>
                                                                                 <select class="form-control"
-                                                                                        th:id="${'staffSelect'+order.id}"
-                                                                                        name="adminId"
-                                                                                        required>
+                                                                                        name="adminId" required>
                                                                                     <option value="" disabled selected>
                                                                                         -- Choose a staff member --
                                                                                     </option>
@@ -336,7 +332,6 @@
                                                                                             th:text="${staff.name}"></option>
                                                                                 </select>
                                                                             </div>
-
                                                                             <button type="submit"
                                                                                     class="btn btn-primary">Confirm
                                                                             </button>
@@ -351,20 +346,19 @@
                                                         </div>
                                                     </div>
 
-                                                    <!-- Modal Edit -->
-                                                    <div class="modal fade" th:id="${'myModal_edit'+order.id}"
-                                                         tabindex="-1"
-                                                         role="dialog">
+                                                    <!-- MODAL: Edit Status -->
+                                                    <div th:if="${order.status != 'Request'}"
+                                                         class="modal fade"
+                                                         th:id="${'myModal_edit'+order.id}"
+                                                         tabindex="-1" role="dialog">
                                                         <div class="modal-dialog" role="document">
                                                             <div class="modal-content">
                                                                 <div class="modal-header">
                                                                     <button type="button" class="close"
-                                                                            data-dismiss="modal"
-                                                                            aria-label="Close"><span
-                                                                            aria-hidden="true">&times;</span></button>
+                                                                            data-dismiss="modal" aria-label="Close">
+                                                                        <span aria-hidden="true">&times;</span></button>
                                                                     <h4 class="modal-title">Edit this order?</h4>
                                                                 </div>
-
                                                                 <div class="modal-body">
                                                                     <form th:action="@{/admin/edit-order}"
                                                                           method="post">
@@ -375,23 +369,18 @@
                                                                                 <label>Status</label>
                                                                                 <select id="status" name="status"
                                                                                         class="form-control" required>
-                                                                                    <!-- Pending → Approved, Cancelled -->
                                                                                     <option th:if="${order.status == 'Pending'}"
                                                                                             value="Approved">Approved
                                                                                     </option>
                                                                                     <option th:if="${order.status == 'Pending'}"
                                                                                             value="Cancelled">Cancelled
                                                                                     </option>
-
-                                                                                    <!-- Assigned → Approved, Cancelled -->
                                                                                     <option th:if="${order.status == 'Assigned'}"
                                                                                             value="Approved">Approved
                                                                                     </option>
                                                                                     <option th:if="${order.status == 'Assigned'}"
                                                                                             value="Cancelled">Cancelled
                                                                                     </option>
-
-                                                                                    <!-- Approved → In Delivery, Cancelled -->
                                                                                     <option th:if="${order.status == 'Approved'}"
                                                                                             value="In Delivery">In
                                                                                         Delivery
@@ -399,19 +388,14 @@
                                                                                     <option th:if="${order.status == 'Approved'}"
                                                                                             value="Cancelled">Cancelled
                                                                                     </option>
-
-                                                                                    <!-- In Delivery → Completed, Returned -->
                                                                                     <option th:if="${order.status == 'In Delivery'}"
                                                                                             value="Completed">Completed
                                                                                     </option>
                                                                                     <option th:if="${order.status == 'In Delivery'}"
                                                                                             value="Returned">Returned
                                                                                     </option>
-
-                                                                                    <!-- Completed / Cancelled / Returned → không có option nào -->
                                                                                 </select>
 
-                                                                                <!-- Notification if cannot change -->
                                                                                 <div th:if="${order.status == 'Completed' or order.status == 'Cancelled' or order.status == 'Returned'}"
                                                                                      style="margin-top: 10px; padding: 10px; background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px; color: #721c24;">
                                                                                     <i class="fa fa-info-circle"></i>
@@ -427,12 +411,75 @@
                                                                         <button type="button" class="btn btn-default"
                                                                                 data-dismiss="modal">Cancel
                                                                         </button>
-
                                                                     </form>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
+
+                                                    <!-- MODAL: Cancel Request Review -->
+                                                    <div th:if="${order.status == 'Request'}"
+                                                         class="modal fade"
+                                                         th:id="${'cancelModal_'+order.id}"
+                                                         tabindex="-1" role="dialog">
+                                                        <div class="modal-dialog" role="document">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <button type="button" class="close"
+                                                                            data-dismiss="modal" aria-label="Close">
+                                                                        <span aria-hidden="true">&times;</span></button>
+                                                                    <h4 class="modal-title">
+                                                                        <i class="fa fa-exclamation-triangle"
+                                                                           style="color:#e67e22;"></i>
+                                                                        Cancel Request — Order #<span
+                                                                            th:text="${order.id}"></span>
+                                                                    </h4>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <p>Customer has requested to cancel this order.</p>
+                                                                    <p>
+                                                                        <strong>Customer:</strong>
+                                                                        <span th:text="${order.user != null ? order.user.name : ''}"></span>
+                                                                    </p>
+                                                                    <p>
+                                                                        <strong>Total:</strong>
+                                                                        <span th:text="${#numbers.formatInteger(order.getFinalTotal(), 1, 'COMMA') + ' VND'}"></span>
+                                                                    </p>
+                                                                    <hr>
+                                                                    <p>
+                                                                        <span class="label label-danger">Confirm</span>
+                                                                        — order will be set to
+                                                                        <strong>Cancelled</strong> and stock will be
+                                                                        restored.
+                                                                    </p>
+                                                                    <p>
+                                                                        <span class="label label-default">Reject</span>
+                                                                        — order will return to <strong>Approved</strong>
+                                                                        and continue normally.
+                                                                    </p>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <form th:action="@{/admin/approve-cancel-request}"
+                                                                          method="post" style="display:inline;">
+                                                                        <input type="hidden" name="orderId"
+                                                                               th:value="${order.id}">
+                                                                        <button type="submit" class="btn btn-danger">
+                                                                            <i class="fa fa-check"></i> Confirm
+                                                                        </button>
+                                                                    </form>
+                                                                    <form th:action="@{/admin/reject-cancel-request}"
+                                                                          method="post" style="display:inline;">
+                                                                        <input type="hidden" name="orderId"
+                                                                               th:value="${order.id}">
+                                                                        <button type="submit" class="btn btn-default">
+                                                                            <i class="fa fa-times"></i> Reject
+                                                                        </button>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
                                                 </th:block>
                                             </table>
                                         </div>
@@ -444,35 +491,25 @@
                 </div>
             </div>
         </div>
+
         <nav aria-label="Page navigation" style="text-align: center;">
             <ul class="pagination">
-
                 <li th:classappend="${page == 1} ? 'disabled'">
-                    <a th:if="${page > 1}"
-                       th:href="@{/admin/manage-order(page=${page - 1})}">
-                        &laquo;
-                    </a>
+                    <a th:if="${page > 1}" th:href="@{/admin/manage-order(page=${page - 1})}">&laquo;</a>
                     <span th:if="${page == 1}">&laquo;</span>
                 </li>
-
-                <li th:each="i : ${#numbers.sequence(1, totalPage)}"
-                    th:classappend="${i == page} ? 'active'">
-                    <a th:href="@{/admin/manage-order(page=${i})}"
-                       th:text="${i}"></a>
+                <li th:each="i : ${#numbers.sequence(1, totalPage)}" th:classappend="${i == page} ? 'active'">
+                    <a th:href="@{/admin/manage-order(page=${i})}" th:text="${i}"></a>
                 </li>
-
                 <li th:classappend="${page == totalPage} ? 'disabled'">
-                    <a th:if="${page < totalPage}"
-                       th:href="@{/admin/manage-order(page=${page + 1})}">
-                        &raquo;
-                    </a>
+                    <a th:if="${page < totalPage}" th:href="@{/admin/manage-order(page=${page + 1})}">&raquo;</a>
                     <span th:if="${page == totalPage}">&raquo;</span>
                 </li>
-
             </ul>
         </nav>
     </div>
 </main>
+
 <footer id="tg-footer" class="tg-footer tg-haslayout">
     <div class="tg-footerarea">
         <div class="container">
@@ -481,31 +518,23 @@
                     <ul class="tg-clientservices">
                         <li class="tg-devlivery">
                             <span class="tg-clientserviceicon"><i class="icon-rocket"></i></span>
-                            <div class="tg-titlesubtitle">
-                                <h3>Delivery </h3>
-                                <p>Fast nationwide delivery</p>
-                            </div>
+                            <div class="tg-titlesubtitle"><h3>Delivery</h3>
+                                <p>Fast nationwide delivery</p></div>
                         </li>
                         <li class="tg-discount">
                             <span class="tg-clientserviceicon"><i class="icon-tag"></i></span>
-                            <div class="tg-titlesubtitle">
-                                <h3>Price</h3>
-                                <p>Attractive and reasonable</p>
-                            </div>
+                            <div class="tg-titlesubtitle"><h3>Price</h3>
+                                <p>Attractive and reasonable</p></div>
                         </li>
                         <li class="tg-quality">
                             <span class="tg-clientserviceicon"><i class="icon-leaf"></i></span>
-                            <div class="tg-titlesubtitle">
-                                <h3>Quality</h3>
-                                <p>Top quality products</p>
-                            </div>
+                            <div class="tg-titlesubtitle"><h3>Quality</h3>
+                                <p>Top quality products</p></div>
                         </li>
                         <li class="tg-support">
                             <span class="tg-clientserviceicon"><i class="icon-heart"></i></span>
-                            <div class="tg-titlesubtitle">
-                                <h3>24/7 Support</h3>
-                                <p>Service at any time</p>
-                            </div>
+                            <div class="tg-titlesubtitle"><h3>24/7 Support</h3>
+                                <p>Service at any time</p></div>
                         </li>
                     </ul>
                 </div>
@@ -515,38 +544,22 @@
                             <strong class="tg-logo"><a href="javascript:void(0);"><img src="../images/flogo.png"
                                                                                        alt="image description"></a></strong>
                             <ul class="tg-contactinfo">
-                                <li>
-                                    <i class="icon-apartment"></i>
+                                <li><i class="icon-apartment"></i>
                                     <address>Ha Dong, Hanoi, Vietnam</address>
                                 </li>
-                                <li>
-                                    <i class="icon-phone-handset"></i>
-                                    <span>
-                                  <em>0812 567 889</em>
-                                  <em>+84 1245 6767</em>
-                               </span>
+                                <li><i class="icon-phone-handset"></i><span><em>0812 567 889</em><em>+84 1245 6767</em></span>
                                 </li>
-                                <li>
-                                    <i class="icon-clock"></i>
-                                    <span>
-                                  Serving 7 days a week from 9:00 - 22:00
-                               </span>
-                                </li>
-                                <li>
-                                    <i class="icon-envelope"></i>
-                                    <span>
-                                  <em><a href="mailto:support@domain.com">support@booklibrary.com</a></em>
-                                  <em><a href="mailto:info@domain.com">info@booklibrary.com</a></em>
-                               </span>
-                                </li>
+                                <li><i class="icon-clock"></i><span>Serving 7 days a week from 9:00 - 22:00</span></li>
+                                <li><i class="icon-envelope"></i><span><em><a href="mailto:support@booklibrary.com">support@booklibrary.com</a></em><em><a
+                                        href="mailto:info@booklibrary.com">info@booklibrary.com</a></em></span></li>
                             </ul>
                             <ul class="tg-socialicons">
-                                <li class="tg-facebook"><a href="javascript:void(0);"><i
-                                        class="fa fa-facebook"></i></a></li>
-                                <li class="tg-twitter"><a href="javascript:void(0);"><i
-                                        class="fa fa-twitter"></i></a></li>
-                                <li class="tg-linkedin"><a href="javascript:void(0);"><i
-                                        class="fa fa-linkedin"></i></a></li>
+                                <li class="tg-facebook"><a href="javascript:void(0);"><i class="fa fa-facebook"></i></a>
+                                </li>
+                                <li class="tg-twitter"><a href="javascript:void(0);"><i class="fa fa-twitter"></i></a>
+                                </li>
+                                <li class="tg-linkedin"><a href="javascript:void(0);"><i class="fa fa-linkedin"></i></a>
+                                </li>
                                 <li class="tg-googleplus"><a href="javascript:void(0);"><i
                                         class="fa fa-google-plus"></i></a></li>
                                 <li class="tg-rss"><a href="javascript:void(0);"><i class="fa fa-rss"></i></a></li>
@@ -555,12 +568,8 @@
                     </div>
                     <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                         <div class="tg-footercol tg-widget tg-widgetnavigation">
-                            <div class="tg-widgettitle">
-                                <h3>We guarantee</h3>
-                            </div>
-
+                            <div class="tg-widgettitle"><h3>We guarantee</h3></div>
                             <div class="tg-widgetcontent">
-
                                 <ul>
                                     <li><a href="javascript:void(0);">Always respect customers</a></li>
                                     <li><a href="javascript:void(0);">Protect necessary information</a></li>
@@ -576,8 +585,7 @@
         </div>
     </div>
     <div class="tg-footerbar">
-        <a id="tg-btnbacktotop" class="tg-btnbacktotop" href="javascript:void(0);"><i
-                class="icon-chevron-up"></i></a>
+        <a id="tg-btnbacktotop" class="tg-btnbacktotop" href="javascript:void(0);"><i class="icon-chevron-up"></i></a>
         <div class="container">
             <div class="row">
                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -588,6 +596,7 @@
         </div>
     </div>
 </footer>
+
 <script src="../js/vendor/jquery-library.js"></script>
 <script src="../js/vendor/bootstrap.min.js"></script>
 <script src="../js/owl.carousel.min.js"></script>
