@@ -22,7 +22,8 @@ import java.util.*;
 public class AdminController {
 
     @Autowired
-    AuthorService authorService;
+    AuthorService authorService 
+    ;
     @Autowired
     BookService bookService;
     @Autowired
