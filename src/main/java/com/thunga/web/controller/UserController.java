@@ -898,9 +898,7 @@ public class UserController {
                 return "redirect:/orders";
             }
 
-            Double orderDiscount = order.getDiscount_amount() != null ? order.getDiscount_amount() : 0.0;
-
-            Double finalTotal = order.getFinalTotal();
+            
 
             String promotionCode = null;
             if (order.getVoucher() != null) {
